@@ -378,10 +378,6 @@ YYTKStatus API::Internal::VfLookupFunction(const char* szFunctionName, TRoutine&
 
 YYTKStatus API::Internal::VfGetIdByName(YYObjectBase* pObject, const char* szName, int& outId)
 {
-#ifndef _DEBUG
-	return YYTK_UNAVAILABLE;
-#endif
-
 	DWORD dwGlobalGet = 0;
 	DWORD dwCallAddress = 0;
 

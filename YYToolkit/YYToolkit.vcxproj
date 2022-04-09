@@ -161,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Src\Core\Features\API\Internal.hpp" />
+    <ClInclude Include="Src\Core\Features\Console\Builder\Builder.hpp" />
     <ClInclude Include="Src\Core\Features\Console\Console.hpp" />
     <ClInclude Include="Src\Core\Features\API\API.hpp" />
     <ClInclude Include="Src\Core\Features\PluginManager\PluginManager.hpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="Src\Toolkit\Utils\StackTrace.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Core\Features\Console\Builder\Builder.cpp" />
     <ClCompile Include="Src\Core\Features\Console\Console.cpp" />
     <ClCompile Include="Src\Core\Features\API\API.cpp" />
     <ClCompile Include="Src\Core\Features\API\Internal.cpp" />
