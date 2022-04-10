@@ -46,7 +46,7 @@ void __stdcall Main(HINSTANCE g_hDLL)
 	while (!GetAsyncKeyState(VK_END)) 
 	{
 		if (GetAsyncKeyState(VK_F10) & 1)
-			Console::DoCommand();
+			Console::RunCommand();
 
 		Sleep(5); 
 	}

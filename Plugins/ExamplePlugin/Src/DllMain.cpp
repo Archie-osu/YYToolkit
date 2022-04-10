@@ -36,12 +36,13 @@ CCode* GetCodeFromScript(CScript* pScript)
 
     return nullptr;
 }
+
 // Handles all events that happen inside the game.
 // Previously, callbacks served this purpose, however in 0.0.3, an object-oriented design was implemented.
 // If you want to modify a code entry, you're gonna need this function.
 YYTKStatus PluginEventHandler(YYTKPlugin* pPlugin, YYTKEventBase* pEvent)
 {
-    // Check if the event currently raised is a rendering event (EndScene for DX9, Present for DX11)
+    // Check if the event currently raised is a script event
     if (pEvent->GetEventType() == EventType::EVT_DOCALLSCRIPT)
     {
         // Convert the base event to the actual event object based on it's type.

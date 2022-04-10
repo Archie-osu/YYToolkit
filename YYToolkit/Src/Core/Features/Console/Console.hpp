@@ -1,10 +1,6 @@
 #pragma once
+#include <string>
 namespace Console
 {
-	namespace Builder
-	{
-
-	}
-
-	void DoCommand();
+	void RunCommand(std::string _cmd = "");
 }

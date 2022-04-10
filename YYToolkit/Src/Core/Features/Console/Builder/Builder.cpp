@@ -1,8 +1,6 @@
 #include "Builder.hpp"
 #include <regex>
 
-#define NPOS std::string::npos
-
 namespace Console
 {
 	namespace Builder
@@ -28,69 +26,182 @@ namespace Console
 				else if (FunctionCall.at(index) == ')')
 					CurrentDepth--;
 
-				if (FunctionCall.at(index) == ',')
-					ArgCount++;
+				// Only count top-level args
+				if (CurrentDepth == 0)
+				{
+					if (FunctionCall.at(index) == ',')
+						ArgCount++;
+				}
 			}
 
 			return ArgCount;
 		}
 
-		size_t GetNthOccurence(const std::string& where, char what, int which)
+		std::string RemoveWS(const std::string& FunctionCall)
 		{
-			int Count = 0;
+			bool IsInsideString = false;
 
-			for (size_t n = 0; n < where.length(); n++)
+			std::string NewString;
+
+			for (int n = 0; n < FunctionCall.length(); n++)
 			{
-				if (where.at(n) != what)
-					continue;
+				if (FunctionCall.at(n) == '"')
+					IsInsideString = !IsInsideString;
 
-				if (Count == which)
-					return n;
-
-				Count++;
+				if (FunctionCall.at(n) != ' ' || IsInsideString)
+					NewString.push_back(FunctionCall.at(n));
 			}
 
-			return NPOS;
-		}
-
-		Argument_t MakeArgument(const std::string& FunctionCall, uint32_t Index)
-		{
-			// Return empty if index < 1
-			if (Index < 1)
-				return { "", false };
-
-			// If we try to access OOB
-			if (Index > GetArgumentCount(FunctionCall))
-				return { "", false };
-			
-			// TODO: Somehow get n'th argument, initialize argument like this (or via the constructor)
-			Argument_t Argument("<default string>");
-
-			std::string ArgumentContent = "";
-			Argument.IsEvaluationRequired = IsFunctionCall(ArgumentContent);
-			
-			return Argument;
+			return NewString;
 		}
 
 		bool IsFunctionCall(const std::string& RawInput)
 		{
-			std::regex FunctionCallRegex = std::regex("[a-zA-Z]+\\(.*\\)");
-			
+			std::regex FunctionCallRegex = std::regex("[a-zA-Z_]+\\(.*\\)");
+
 			return std::regex_match(RawInput, FunctionCallRegex);
 		}
 
-		bool BuildAFD(const std::string& RawInput, FunctionCall_t& out)
+		bool IsValidTokenCharacter(char c)
 		{
-			if (!IsFunctionCall(RawInput))
-				return false;
+			// I know I can inline this, but I choose readability and maintainability
+			// ie. I don't want a giant line of return (x || y || z || w)
 
-			// Find all arguments
-			for (int Argument = 1; Argument < GetArgumentCount(RawInput); Argument++)
+			// TokenKind_Opening
+			if (c == '(')
+				return true;
+
+			// TokenKind_Closing
+			if (c == ')')
+				return true;
+
+			// TokenKind_String
+			if (c == '"')
+				return true;
+
+			// TokenKind_Number
+			if (isdigit(c))
+				return true;
+
+			// TokenKind_EndExpression
+			if (c == ';')
+				return true;
+
+			return false;
+		}
+
+		std::string ResolveShorthands(const std::string& Input)
+		{
+			// Syntax: global.whatever = value
+			// Processed: variable_global_set("whatever", value)
+			std::regex regexAssignment("global\\.([a-zA-Z_]+) = (.*)");
+			std::regex regexPeek("global\\.([a-zA-Z_]+)");
+
+			std::string Return = Input;
+
+			if (std::regex_match(Return, regexAssignment))
 			{
-				out.Arguments.push_back(MakeArgument(RawInput, Argument));
+				Return = std::regex_replace(Return, regexAssignment, "variable_global_set(\"$1\", $2)");
 			}
 
-			return true;
+			// Syntax: global.whatever
+			// Processed: variable_global_get("whatever")
+			if (std::regex_match(Return, regexPeek))
+			{
+				Return = std::regex_replace(Return, regexPeek, "variable_global_get(\"$1\")");
+			}
+
+			return Return;
+		}
+
+		std::vector<Token_t> BuildTokenList(const std::string& RawInput)
+		{
+			if (!IsFunctionCall(RawInput))
+				return {};
+
+			std::string FnCall = RemoveWS(ResolveShorthands(RawInput));
+			std::vector<Token_t> Tokens;
+
+			// Loop over every character in the string
+			{
+				int _CurrDepth = 0;
+#define CurrIdx(str) str.at(CurrentIndex)
+				std::string UnknownBuffer = ""; // Buffer for unknown parts of the call
+				for (int CurrentIndex = 0; CurrentIndex < FnCall.length(); CurrentIndex++)
+				{
+					// Erase the unknown buffer, the identifier ends here.
+					if (IsValidTokenCharacter(CurrIdx(FnCall)) && !UnknownBuffer.empty())
+					{
+						Tokens.push_back(Token_t(TokenKind_Identifier, UnknownBuffer, CurrentIndex - UnknownBuffer.length(), _CurrDepth));
+						UnknownBuffer.clear();
+					}
+
+					// Depth Increase
+					if (CurrIdx(FnCall) == '(')
+					{
+						_CurrDepth++;
+						Tokens.push_back(Token_t(TokenKind_Opening, "(", CurrentIndex, _CurrDepth));
+					}
+
+					// Depth decrease
+					else if (CurrIdx(FnCall) == ')')
+					{
+						Tokens.push_back(Token_t(TokenKind_Closing, ")", CurrentIndex, _CurrDepth));
+						_CurrDepth--;
+					}
+
+					// String opening
+					else if (CurrIdx(FnCall) == '"')
+					{
+						Token_t Token(TokenKind_String, "", CurrentIndex, _CurrDepth);
+
+						// Until we either reach the end of the string
+						// We have to increment CurrentIndex by 1 to not kill the loop immediately
+						CurrentIndex++;
+
+						for (; CurrentIndex < FnCall.length() && CurrIdx(FnCall) != '"'; CurrentIndex++)
+							Token.StringRepresentation.push_back(CurrIdx(FnCall));
+
+						Tokens.push_back(Token);
+					}
+
+					else if (isdigit(CurrIdx(FnCall)))
+					{
+						Token_t Token(TokenKind_Number, "", CurrentIndex, _CurrDepth);
+
+						// We have to account for both digits and decimal points
+						while (isdigit(CurrIdx(FnCall)) || CurrIdx(FnCall) == '.')
+						{
+							// Buffer is guaranteed to be empty
+							Token.StringRepresentation.push_back(CurrIdx(FnCall));
+							CurrentIndex++;
+						}
+
+						Tokens.push_back(Token);
+
+						CurrentIndex--; // I don't know why but this fixes it - maybe a do while loop is the solution?
+					}
+
+					else if (CurrIdx(FnCall) == ',')
+					{
+						Tokens.push_back(Token_t(TokenKind_Separator, ",", CurrentIndex, _CurrDepth));
+					}
+					
+					else if (CurrIdx(FnCall) == ';')
+					{
+						Tokens.push_back(Token_t(TokenKind_EndExpression, ";", CurrentIndex, _CurrDepth));
+						break;
+					}
+						
+					else
+					{
+						UnknownBuffer.push_back(CurrIdx(FnCall));
+					}
+				}
+#undef CurrIdx
+			}
+
+			return Tokens;
 		}
 	}
 }

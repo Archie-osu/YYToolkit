@@ -1,39 +1,36 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <list>
 namespace Console
 {
-	// what do i call this
-
-
-	struct Argument_t
+	enum ETokenKind
 	{
-		std::string Content;
-		bool IsEvaluationRequired;
-
-		Argument_t(const std::string& Content)
-		{
-			this->Content = Content;
-			IsEvaluationRequired = false;
-		}
-
-		Argument_t(const std::string& Content, bool EvaluationRequired)
-		{
-			this->Content = Content;
-			IsEvaluationRequired = EvaluationRequired;
-		}
+		TokenKind_Identifier, // Whatever is not listed below
+		TokenKind_Opening, // Opening brace '('
+		TokenKind_Closing, // Closing brace ')'
+		TokenKind_String, // "abc"
+		TokenKind_Number, // 123
+		TokenKind_Separator, // ,
+		TokenKind_EndExpression // Semicolons
 	};
 
-	struct FunctionCall_t
+	struct Token_t
 	{
-		// Elements of the function
-		// function_test(123, "abc", evalMe()) should become:
-			// "function_test" -> false
-			// "123" -> false
-			// "abc" -> false
-			// "evalMe()" -> true
-		std::vector<Argument_t> Arguments;
-		std::string FunctionName;
+		ETokenKind Type;
+
+		std::string StringRepresentation;
+		
+		size_t IndexInString;
+		int Depth;
+
+		Token_t(ETokenKind Type, const std::string& Value, size_t IndexInString, int Depth)
+		{
+			this->Type = Type;
+			this->StringRepresentation = Value;
+			this->IndexInString = IndexInString;
+			this->Depth = Depth;
+		}
 	};
 
 	namespace Builder
@@ -41,14 +38,19 @@ namespace Console
 		// Gets the argument count for a specific function - 0 up to UINT_MAX
 		uint32_t GetArgumentCount(const std::string& FunctionCall);
 
-		Argument_t MakeArgument(const std::string& FunctionCall, uint32_t Index);
-
-		size_t GetNthOccurence(const std::string& where, char what, int which);
+		// Remove whitespace, doesn't remove it from strings
+		std::string RemoveWS(const std::string& FunctionCall);
 
 		// Check if a string is actually a GML-style call
 		bool IsFunctionCall(const std::string& RawInput);
+		
+		// Checks if a character is a token character
+		bool IsValidTokenCharacter(char c);
 
-		// Builds an AFD structure based off a GML call
-		bool BuildAFD(const std::string& RawInput, FunctionCall_t& out);
+		// Resolves stuff like "global.var = x" to "variable_global_set(var, x)"
+		std::string ResolveShorthands(const std::string& Input);
+
+		// Build a token list
+		std::vector<Token_t> BuildTokenList(const std::string& RawInput);
 	}
 }
