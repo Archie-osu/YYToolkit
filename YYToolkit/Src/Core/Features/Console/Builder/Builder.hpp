@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <list>
+#include <optional>
 namespace Console
 {
 	enum ETokenKind
@@ -18,19 +18,23 @@ namespace Console
 	struct Token_t
 	{
 		ETokenKind Type;
-
-		std::string StringRepresentation;
-		
+		std::string Value;
 		size_t IndexInString;
 		int Depth;
 
 		Token_t(ETokenKind Type, const std::string& Value, size_t IndexInString, int Depth)
 		{
 			this->Type = Type;
-			this->StringRepresentation = Value;
+			this->Value = Value;
 			this->IndexInString = IndexInString;
 			this->Depth = Depth;
 		}
+	};
+
+	struct TreeNode_t
+	{
+		std::vector<TreeNode_t> Subnodes;
+		std::optional<Token_t> Token;
 	};
 
 	namespace Builder
@@ -52,5 +56,11 @@ namespace Console
 
 		// Build a token list
 		std::vector<Token_t> BuildTokenList(const std::string& RawInput);
+
+		TreeNode_t BuildAST(std::vector<Token_t>& Tokens);
+
+		std::vector<TreeNode_t> GetNodesAtDepth(TreeNode_t& Head, int Depth);
+
+		int GetMaxTreeDepth(TreeNode_t& Head);
 	}
 }

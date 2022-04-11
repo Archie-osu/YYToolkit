@@ -1,4 +1,5 @@
 #include "Builder.hpp"
+#include "../../../Utils/Logging/Logging.hpp"
 #include <regex>
 
 namespace Console
@@ -160,7 +161,7 @@ namespace Console
 						CurrentIndex++;
 
 						for (; CurrentIndex < FnCall.length() && CurrIdx(FnCall) != '"'; CurrentIndex++)
-							Token.StringRepresentation.push_back(CurrIdx(FnCall));
+							Token.Value.push_back(CurrIdx(FnCall));
 
 						Tokens.push_back(Token);
 					}
@@ -173,7 +174,7 @@ namespace Console
 						while (isdigit(CurrIdx(FnCall)) || CurrIdx(FnCall) == '.')
 						{
 							// Buffer is guaranteed to be empty
-							Token.StringRepresentation.push_back(CurrIdx(FnCall));
+							Token.Value.push_back(CurrIdx(FnCall));
 							CurrentIndex++;
 						}
 
@@ -202,6 +203,89 @@ namespace Console
 			}
 
 			return Tokens;
+		}
+
+		TreeNode_t BuildAST(std::vector<Token_t>& Tokens)
+		{
+			TreeNode_t Head;
+
+			for (int n = 0; n < Tokens.size(); n++)
+			{
+				TreeNode_t NewNode;
+				NewNode.Token = std::make_optional(Tokens[n]);
+
+				int CurrentDepth = 0;
+				int TokenDepth = Tokens[n].Depth;
+
+				TreeNode_t* currNode = &Head;
+				while (CurrentDepth != TokenDepth)
+				{
+					// Vector is empty
+					if (currNode->Subnodes.empty())
+					{
+						currNode->Subnodes.push_back(NewNode);
+						break;
+					}
+
+					currNode = &currNode->Subnodes.back();
+					CurrentDepth++;
+				}
+
+				currNode->Subnodes.push_back(NewNode);
+			}
+
+			return Head;
+		}
+
+		std::vector<TreeNode_t> GetNodesAtDepth(TreeNode_t& Head, int Depth)
+		{
+			std::vector<TreeNode_t> ResultNodes;
+
+			if (Head.Subnodes.empty())
+				return {};
+
+			for (auto& subnode : Head.Subnodes)
+			{
+				if (!subnode.Token)
+					continue;
+
+				if (subnode.Token->Depth == Depth)
+					ResultNodes.push_back(subnode);
+
+				std::vector<TreeNode_t> RecursiveVector = GetNodesAtDepth(subnode, Depth);
+				for (auto& recurseSubnode : RecursiveVector)
+					ResultNodes.push_back(recurseSubnode);
+			}
+
+			return ResultNodes;
+		}
+
+		/*
+		i_suck_at_aiming — Today at 15:11
+		do you enjoy trees
+
+		nik — Today at 15:11
+		they're neat
+
+		i_suck_at_aiming — Today at 15:12
+		do you enjoy searching for the maximum depth of a tree
+
+		(after 20 minutes he realizes)
+
+		nik — Today at 15:32
+		jfc i thought you meant like, real life trees
+		you said you uninstalled visual studio recently so i thought you're doing forest hiking or something
+		*/
+
+		int GetMaxTreeDepth(TreeNode_t& Head)
+		{
+			for (int n = 0; n < 129; n++)
+			{
+				if (GetNodesAtDepth(Head, n).empty())
+					return n - 1;
+			}
+
+			return 0;
 		}
 	}
 }
