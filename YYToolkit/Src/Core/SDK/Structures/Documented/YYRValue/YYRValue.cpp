@@ -235,3 +235,8 @@ YYRValue& YYRValue::operator/=(const double& Value)
 
 	return *this;
 }
+
+int YYRValue::GetKind()
+{
+	return this->Kind;
+}

@@ -98,6 +98,8 @@ struct YYRValue : protected RValue
 	// V /= 30.0;
 	YYRValue& operator /=(const double& Value);
 
+	int GetKind();
+
 	// You really shouldn't use this unless you know what you're doing.
 	template <typename T>
 	inline T& As() const { return *((T*)this); }

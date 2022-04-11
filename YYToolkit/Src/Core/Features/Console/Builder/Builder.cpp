@@ -299,5 +299,65 @@ namespace Console
 
 			return 0;
 		}
+
+		TreeNode_t& FindNodeByStringIndex(TreeNode_t& Head, int StringIndex)
+		{
+			if (Head.Token)
+			{
+
+			}
+
+
+		}
+
+		std::vector<TreeNode_t> GetFunctionCallArguments(TreeNode_t& BaseNode, bool RemoveUnused)
+		{
+			std::vector<TreeNode_t&> Args;
+			for (auto& Subnode : BaseNode.Subnodes)
+			{
+				if (!Subnode.Token)
+					continue;
+
+
+				if (Subnode.Token->Type == ETokenKind::TokenKind_Identifier)
+				{
+					std::vector<TreeNode_t> NestedArguments = GetFunctionCallArguments(Subnode);
+					for (auto& NestedArgument : NestedArguments)
+					{
+						if (RemoveUnused)
+						{
+							if (Subnode.Token->Type == ETokenKind::TokenKind_Opening)
+								continue;
+
+							else if (Subnode.Token->Type == ETokenKind::TokenKind_Closing)
+								continue;
+
+							else if (Subnode.Token->Type == ETokenKind::TokenKind_Separator)
+								continue;
+						}
+
+						Args.push_back(NestedArgument);
+					}
+				}
+				else
+				{
+					if (RemoveUnused)
+					{
+						if (Subnode.Token->Type == ETokenKind::TokenKind_Opening)
+							continue;
+
+						else if (Subnode.Token->Type == ETokenKind::TokenKind_Closing)
+							continue;
+
+						else if (Subnode.Token->Type == ETokenKind::TokenKind_Separator)
+							continue;
+					}
+
+					Args.push_back(Subnode);
+				}
+			}
+
+			return Args;
+		}
 	}
 }

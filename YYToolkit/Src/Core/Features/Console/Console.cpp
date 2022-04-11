@@ -1,7 +1,6 @@
 #include "../../SDK/Structures/Documented/YYRValue/YYRValue.hpp"
 #include "../../SDK/Structures/Documented/RefThing/RefThing.hpp"
 #include "../../Utils/Logging/Logging.hpp"
-#include "Builder/Builder.hpp"
 #include "../API/Internal.hpp"
 #include "../API/API.hpp"
 #include "Console.hpp"
@@ -47,7 +46,6 @@ void Console::RunCommand(std::string _cmd)
 		return;
 	}
 
-	std::vector<YYRValue> Arguments;
 	YYRValue Result;
 
 	TreeNode_t AST = Builder::BuildAST(Tokens);
@@ -63,58 +61,43 @@ void Console::RunCommand(std::string _cmd)
 			if (!Node.Token)
 				continue;
 
-			if (Node.Token->Type == ETokenKind::TokenKind_String)
-				Arguments.push_back(YYRValue(Node.Token->Value));
+			if (Node.Token->Type != ETokenKind::TokenKind_Identifier)
+				continue;
 
-			else if (Node.Token->Type == ETokenKind::TokenKind_Number)
-				Arguments.push_back(YYRValue(std::stod(Node.Token->Value)));
-
-			else if (Node.Token->Type == ETokenKind::TokenKind_Separator)
-				Arguments.clear();
-
-			if (Node.Token->Type == ETokenKind::TokenKind_Identifier)
+			std::vector<YYRValue> Arguments;
+			auto vecFunctionCallArguments = Builder::GetFunctionCallArguments(Node, true);
+			for (auto& nodeArgument : vecFunctionCallArguments)
 			{
-				TRoutine Routine = nullptr;
-				int Index = 0;
-
-				YYTKStatus NameLookupStatus = API::Internal::VfLookupFunction(Node.Token->Value.c_str(), Routine, &Index);
-				if (NameLookupStatus)
+				if (nodeArgument.Token->Type == ETokenKind::TokenKind_Number)
 				{
-					Utils::Logging::Error(__FILE__, __LINE__, "Function lookup on \"%s\" failed with %s - not executing this!",
-						Node.Token->Value.c_str(),
-						Utils::Logging::YYTKStatus_ToString(NameLookupStatus).c_str()
-					);
-					return;
+					Arguments.push_back(YYRValue(std::stod(nodeArgument.Token->Value)));
 				}
-
-				int ArgumentCount = YYTK_MAGIC;
-				YYTKStatus IndexLookupStatus = API::Internal::VfGetFunctionEntryFromGameArray(Index, nullptr, &ArgumentCount, nullptr);
-
-				if (IndexLookupStatus)
+				else if (nodeArgument.Token->Type == ETokenKind::TokenKind_String)
 				{
-					Utils::Logging::Error(__FILE__, __LINE__, "Index lookup on \"%s\" failed with %s - argument count will not be checked!",
-						Node.Token->Value.c_str(),
-						Utils::Logging::YYTKStatus_ToString(IndexLookupStatus).c_str()
-					);
+					Arguments.push_back(YYRValue(nodeArgument.Token->Value));
 				}
+			}
 
-				if (ArgumentCount != YYTK_MAGIC && ArgumentCount != Arguments.size())
+			YYRValue Result;
+			if (API::CallBuiltin(Result, Node.Token->Value, nullptr, nullptr, Arguments))
+			{
+				Node.Subnodes.clear();
+
+				if (Result.GetKind() == VALUE_REAL)
 				{
-					Utils::Logging::Error(__FILE__, __LINE__, "Incorrect argument count to \"%s\" - expected %d, got %d - not executing this!",
-						Node.Token->Value.c_str(),
-						ArgumentCount,
-						Arguments.size()
-					);
-
-					return;
+					Node.Token->Type = ETokenKind::TokenKind_Number;
+					Node.Token->Value = std::to_string(Result.operator double());
 				}
-
-				if (API::CallBuiltin(Result, Node.Token->Value, nullptr, nullptr, Arguments))
+				else if (Result.GetKind() == VALUE_STRING)
 				{
-					Arguments.clear();
-					Arguments.push_back(Result);
-					Result = YYRValue();
-					continue;
+					Node.Token->Value = Result.operator std::string();
+					Node.Token->Type = ETokenKind::TokenKind_String;
+				}
+				else
+				{
+					Utils::Logging::Error(__FILE__, __LINE__, "Parsing error - unsupported function return %d", Result.GetKind());
+					Node.Token->Value = "undefined";
+					Node.Token->Type = ETokenKind::TokenKind_String;
 				}
 			}
 		}
@@ -123,7 +106,7 @@ void Console::RunCommand(std::string _cmd)
 	Utils::Logging::NoNewlineMessage(CLR_GOLD, "%s", _cmd.c_str());
 	Utils::Logging::NoNewlineMessage(CLR_DEFAULT, " -> ");
 
-	switch (Result.As<RValue>().Kind)
+	switch (Result.GetKind())
 	{
 	case VALUE_REAL:
 		Utils::Logging::Message(CLR_BLUE, "%.2f", Result.As<RValue>().Real);

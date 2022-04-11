@@ -57,7 +57,6 @@ namespace Console
 		// Resolves stuff like "global.var = x" to "variable_global_set(var, x)"
 		std::string ResolveShorthands(const std::string& Input);
 
-
 		// Build a token list
 		std::vector<Token_t> BuildTokenList(std::string RawInput);
 
@@ -66,5 +65,9 @@ namespace Console
 		std::vector<TreeNode_t> GetNodesAtDepth(TreeNode_t& Head, int Depth);
 
 		int GetMaxTreeDepth(TreeNode_t& Head);
+
+		TreeNode_t& FindNodeByStringIndex(TreeNode_t& Head, int StringIndex);
+
+		std::vector<TreeNode_t> GetFunctionCallArguments(TreeNode_t& BaseNode, bool RemoveUnused = false);
 	}
 }
