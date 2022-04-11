@@ -56,6 +56,17 @@ namespace Console
 			return NewString;
 		}
 
+		std::string RemoveWSFull(const std::string& RawInput)
+		{
+			std::string NewString = RawInput;
+
+			// Remove spaces
+			NewString.erase(std::remove(NewString.begin(), NewString.end(), ' '), NewString.end());
+			NewString.erase(std::remove(NewString.begin(), NewString.end(), '\t'), NewString.end());
+
+			return NewString;
+		}
+
 		bool IsFunctionCall(const std::string& RawInput)
 		{
 			std::regex FunctionCallRegex = std::regex("[a-zA-Z_]+\\(.*\\)");
@@ -115,12 +126,13 @@ namespace Console
 			return Return;
 		}
 
-		std::vector<Token_t> BuildTokenList(const std::string& RawInput)
+		std::vector<Token_t> BuildTokenList(std::string RawInput)
 		{
-			if (!IsFunctionCall(RawInput))
+			if (!IsFunctionCall(RemoveWSFull(RawInput)))
 				return {};
 
 			std::string FnCall = RemoveWS(ResolveShorthands(RawInput));
+
 			std::vector<Token_t> Tokens;
 
 			// Loop over every character in the string

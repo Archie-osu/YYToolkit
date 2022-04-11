@@ -45,6 +45,9 @@ namespace Console
 		// Remove whitespace, doesn't remove it from strings
 		std::string RemoveWS(const std::string& FunctionCall);
 
+		// Remove whitespace, don't ignore anything
+		std::string RemoveWSFull(const std::string& RawInput);
+
 		// Check if a string is actually a GML-style call
 		bool IsFunctionCall(const std::string& RawInput);
 		
@@ -54,8 +57,9 @@ namespace Console
 		// Resolves stuff like "global.var = x" to "variable_global_set(var, x)"
 		std::string ResolveShorthands(const std::string& Input);
 
+
 		// Build a token list
-		std::vector<Token_t> BuildTokenList(const std::string& RawInput);
+		std::vector<Token_t> BuildTokenList(std::string RawInput);
 
 		TreeNode_t BuildAST(std::vector<Token_t>& Tokens);
 

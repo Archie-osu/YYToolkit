@@ -307,9 +307,6 @@ YYTKStatus API::Internal::VfGetFunctionPointer(const char* szFunctionName, EFPTy
 
 YYTKStatus API::Internal::VfGetFunctionEntryFromGameArray(int nIndex, TRoutine* pOutRoutine, int* pOutArgumentCount, char** pOutNameBuffer)
 {
-	if (!pOutRoutine)
-		return YYTK_INVALIDARG;
-
 	if (nIndex < 0)
 		return YYTK_INVALIDARG;
 
