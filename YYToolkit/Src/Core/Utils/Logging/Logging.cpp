@@ -10,6 +10,10 @@ namespace Utils::Logging
 	{
 		const static size_t MaxStringLength = 1024;
 
+		if (strlen(fmt) >= MaxStringLength)
+			return "<OVERRUN MAX STRING LENGTH>";
+
+
 		char Buf[MaxStringLength];
 		memset(Buf, 0, MaxStringLength);
 

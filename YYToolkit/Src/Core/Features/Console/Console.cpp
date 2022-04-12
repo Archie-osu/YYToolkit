@@ -166,7 +166,7 @@ void Console::RunCommand(std::string _cmd)
 		}
 	}
 
-	Utils::Logging::NoNewlineMessage(CLR_GOLD, "%s", _cmd.c_str());
+	Utils::Logging::NoNewlineMessage(CLR_GOLD, "%s", Builder::RemoveWS(_cmd).c_str());
 	Utils::Logging::NoNewlineMessage(CLR_DEFAULT, " -> ");
 
 	switch (Result.GetKind())
