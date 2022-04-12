@@ -78,26 +78,89 @@ void Console::RunCommand(std::string _cmd)
 				}
 			}
 
-			YYRValue Result;
+
+			TRoutine Routine = nullptr;
+			int Index = 0;
+
+			YYTKStatus NameLookupStatus = API::Internal::VfLookupFunction(Node.Token->Value.c_str(), Routine, &Index);
+			if (NameLookupStatus)
+			{
+				Utils::Logging::Error(__FILE__, __LINE__, "Function lookup on \"%s\" failed with %s - not executing this!",
+					Node.Token->Value.c_str(),
+					Utils::Logging::YYTKStatus_ToString(NameLookupStatus).c_str()
+				);
+				return;
+			}
+
+			int ArgumentCount = YYTK_MAGIC;
+			YYTKStatus IndexLookupStatus = API::Internal::VfGetFunctionEntryFromGameArray(Index, nullptr, &ArgumentCount, nullptr);
+
+			if (IndexLookupStatus)
+			{
+				Utils::Logging::Error(__FILE__, __LINE__, "Index lookup on \"%s\" failed with %s - argument count will not be checked!",
+					Node.Token->Value.c_str(),
+					Utils::Logging::YYTKStatus_ToString(IndexLookupStatus).c_str()
+				);
+			}
+
+			if (ArgumentCount != -1 /* Variable Args */ && ArgumentCount != YYTK_MAGIC && ArgumentCount != Arguments.size())
+			{
+				Utils::Logging::Error(__FILE__, __LINE__, "Incorrect argument count to \"%s\" - expected %d, got %d - not executing this!",
+					Node.Token->Value.c_str(),
+					ArgumentCount,
+					Arguments.size()
+				);
+
+				return;
+			}
+
+			Result = YYRValue();
 			if (API::CallBuiltin(Result, Node.Token->Value, nullptr, nullptr, Arguments))
 			{
-				Node.Subnodes.clear();
+				TreeNode_t* NodeInTree = Builder::FindNodeByStringIndex(AST, Node.Token->IndexInString);
+
+				if (!NodeInTree)
+					continue;
+
+				NodeInTree->Subnodes.clear();
+
+				Utils::Logging::Message(CLR_DEFAULT, "[dbg] Replacing call %s", NodeInTree->Token->Value.c_str());
 
 				if (Result.GetKind() == VALUE_REAL)
 				{
-					Node.Token->Type = ETokenKind::TokenKind_Number;
-					Node.Token->Value = std::to_string(Result.operator double());
+					Utils::Logging::Error(__FILE__, __LINE__, "[dbg] Parsing number %s", std::to_string(Result.operator double()).c_str());
+					NodeInTree->Token->Type = ETokenKind::TokenKind_Number;
+					NodeInTree->Token->Value = std::to_string(Result.operator double());
 				}
 				else if (Result.GetKind() == VALUE_STRING)
 				{
-					Node.Token->Value = Result.operator std::string();
-					Node.Token->Type = ETokenKind::TokenKind_String;
+					Utils::Logging::Error(__FILE__, __LINE__, "[dbg] Parsing string \"%s\"", Result.operator std::string().c_str());
+					NodeInTree->Token->Value = Result.operator std::string();
+					NodeInTree->Token->Type = ETokenKind::TokenKind_String;
+				}
+				else if (Result.GetKind() == VALUE_BOOL)
+				{
+					Utils::Logging::Error(__FILE__, __LINE__, "[dbg] Parsing boolean");
+					NodeInTree->Token->Value = std::to_string(Result.operator bool());
+					NodeInTree->Token->Type = ETokenKind::TokenKind_Number;
+				}
+				else if (Result.GetKind() == VALUE_UNDEFINED)
+				{
+					Utils::Logging::Error(__FILE__, __LINE__, "[dbg] Parsing undefined (what)");
+					NodeInTree->Token->Value = "undefined";
+					NodeInTree->Token->Type = ETokenKind::TokenKind_String;
+				}
+				else if (Result.GetKind() == VALUE_UNSET)
+				{
+					Utils::Logging::Error(__FILE__, __LINE__, "[dbg] Parsing unset (what)");
+					NodeInTree->Token->Value = "unset";
+					NodeInTree->Token->Type = ETokenKind::TokenKind_String;
 				}
 				else
 				{
 					Utils::Logging::Error(__FILE__, __LINE__, "Parsing error - unsupported function return %d", Result.GetKind());
-					Node.Token->Value = "undefined";
-					Node.Token->Type = ETokenKind::TokenKind_String;
+					NodeInTree->Token->Value = "undefined";
+					NodeInTree->Token->Type = ETokenKind::TokenKind_String;
 				}
 			}
 		}

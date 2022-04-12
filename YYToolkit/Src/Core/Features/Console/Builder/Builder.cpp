@@ -69,7 +69,7 @@ namespace Console
 
 		bool IsFunctionCall(const std::string& RawInput)
 		{
-			std::regex FunctionCallRegex = std::regex("[a-zA-Z_]+\\(.*\\)");
+			std::regex FunctionCallRegex = std::regex("[a-zA-Z_@]+\\(.*\\)");
 
 			return std::regex_match(RawInput, FunctionCallRegex);
 		}
@@ -178,12 +178,13 @@ namespace Console
 						Tokens.push_back(Token);
 					}
 
-					else if (isdigit(CurrIdx(FnCall)))
+					// Allow numbers starting with - (minus)
+					else if (isdigit(CurrIdx(FnCall)) || CurrIdx(FnCall) == '-')
 					{
 						Token_t Token(TokenKind_Number, "", CurrentIndex, _CurrDepth);
 
 						// We have to account for both digits and decimal points
-						while (isdigit(CurrIdx(FnCall)) || CurrIdx(FnCall) == '.')
+						while (isdigit(CurrIdx(FnCall)) || CurrIdx(FnCall) == '.' || CurrIdx(FnCall) == '-')
 						{
 							// Buffer is guaranteed to be empty
 							Token.Value.push_back(CurrIdx(FnCall));
@@ -300,19 +301,22 @@ namespace Console
 			return 0;
 		}
 
-		TreeNode_t& FindNodeByStringIndex(TreeNode_t& Head, int StringIndex)
+		TreeNode_t* FindNodeByStringIndex(TreeNode_t& Head, int StringIndex)
 		{
 			if (Head.Token)
-			{
+				if (Head.Token->IndexInString == StringIndex)
+					return &Head;
 
-			}
+			for (auto& Subnode : Head.Subnodes)
+				if (TreeNode_t* Found = FindNodeByStringIndex(Subnode, StringIndex))
+					return Found;
 
-
+			return nullptr;
 		}
 
 		std::vector<TreeNode_t> GetFunctionCallArguments(TreeNode_t& BaseNode, bool RemoveUnused)
 		{
-			std::vector<TreeNode_t&> Args;
+			std::vector<TreeNode_t> Args;
 			for (auto& Subnode : BaseNode.Subnodes)
 			{
 				if (!Subnode.Token)

@@ -66,7 +66,7 @@ namespace Console
 
 		int GetMaxTreeDepth(TreeNode_t& Head);
 
-		TreeNode_t& FindNodeByStringIndex(TreeNode_t& Head, int StringIndex);
+		TreeNode_t* FindNodeByStringIndex(TreeNode_t& Head, int StringIndex);
 
 		std::vector<TreeNode_t> GetFunctionCallArguments(TreeNode_t& BaseNode, bool RemoveUnused = false);
 	}
