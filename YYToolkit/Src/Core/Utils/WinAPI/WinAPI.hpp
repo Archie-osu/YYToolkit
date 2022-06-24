@@ -117,7 +117,7 @@ namespace Utils
 
         bool GetSysProcInfo(SYSTEM_PROCESS_INFORMATION** outInfo);
 
-        bool GetThreadStartAddr(HANDLE ThreadHandle, unsigned long& outAddr);
+        bool GetThreadStartAddr(HANDLE ThreadHandle, uintptr_t& outAddr);
 
         void IterateProcesses(FNProcessIterationFunc IteratorFunction, void* Parameter);
 

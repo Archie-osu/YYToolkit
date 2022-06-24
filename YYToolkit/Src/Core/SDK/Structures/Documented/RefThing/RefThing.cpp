@@ -1,6 +1,6 @@
 #include "RefThing.hpp"
 
-RefString::RefString(const char* _Thing, int _Size, bool _NoAutoFree)
+RefString::RefString(const char* _Thing, size_t _Size, bool _NoAutoFree)
 {
 	m_Thing = new char[_Size + 1];
 	m_Size = _Size;
@@ -50,12 +50,12 @@ int RefString::Size() const
 	return m_Size;
 }
 
-RefString* RefString::Alloc(const char* _Thing, const int& _Size)
+RefString* RefString::Alloc(const char* _Thing, const size_t& _Size)
 {
 	return new RefString(_Thing, _Size, true);
 }
 
-RefString* RefString::Alloc(const char* _Thing, const int& _Size, bool _NoAutoFree)
+RefString* RefString::Alloc(const char* _Thing, const size_t& _Size, bool _NoAutoFree)
 {
 	return new RefString(_Thing, _Size, _NoAutoFree);
 }

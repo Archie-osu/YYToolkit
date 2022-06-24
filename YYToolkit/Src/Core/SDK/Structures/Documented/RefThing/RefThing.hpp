@@ -6,7 +6,7 @@ struct RefString
 	int m_refCount;
 	int m_Size;
 
-	RefString(const char* _Thing, int _Size, bool _NoAutoFree);
+	RefString(const char* _Thing, size_t _Size, bool _NoAutoFree);
 
 	~RefString();
 
@@ -18,8 +18,8 @@ struct RefString
 
 	int Size() const;
 
-	static RefString* Alloc(const char* _Thing, const int& _Size);
-	static RefString* Alloc(const char* _Thing, const int& _Size, bool _NoAutoFree);
+	static RefString* Alloc(const char* _Thing, const size_t& _Size);
+	static RefString* Alloc(const char* _Thing, const size_t& _Size, bool _NoAutoFree);
 
 	static RefString* Assign(RefString* _Other);
 
