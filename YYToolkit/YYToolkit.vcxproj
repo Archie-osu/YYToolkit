@@ -98,6 +98,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UseFullPaths>false</UseFullPaths>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,6 +119,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UseFullPaths>false</UseFullPaths>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +138,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +157,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -192,7 +196,7 @@
     <ClInclude Include="Src\Core\SDK\Structures\Documented\CDynamicArray\CDynamicArray.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\CHashMap\CHashMap.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\FunctionInfo\FunctionInfo.hpp" />
-    <ClInclude Include="Src\Core\SDK\Structures\Documented\Math\Math.hpp" />
+    <ClInclude Include="Src\Core\SDK\Structures\Documented\Math\Vector3D.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\RefThing\RefThing.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\RToken\RToken.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\VMBuffer\VMBuffer.hpp" />
@@ -236,6 +240,7 @@
     <ClCompile Include="Src\Core\SDK\Plugins\API Definitions\APIDefs.cpp" />
     <ClCompile Include="Src\Core\SDK\Plugins\Plugins.cpp" />
     <ClCompile Include="Src\Core\SDK\Structures\Documented\CDynamicArray\CDynamicArray.cpp" />
+    <ClCompile Include="Src\Core\SDK\Structures\Documented\Math\Vector3D.cpp" />
     <ClCompile Include="Src\Core\SDK\Structures\Documented\RefThing\RefThing.cpp" />
     <ClCompile Include="Src\Core\SDK\Structures\Documented\YYRValue\YYRValue.cpp" />
     <ClCompile Include="Src\Core\Utils\D3D11 Hooker\D3D11Hooker.cpp" />

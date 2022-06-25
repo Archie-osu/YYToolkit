@@ -12,7 +12,7 @@
 #include "Structures/Documented/CDynamicArray/CDynamicArray.hpp"
 #include "Structures/Documented/FunctionInfo/FunctionInfo.hpp"
 #include "Structures/Documented/CHashMap/CHashMap.hpp"
-#include "Structures/Documented/Math/Math.hpp"
+#include "Structures/Documented/Math/Vector3D.hpp"
 #include "Structures/Documented/RefThing/RefThing.hpp"
 #include "Structures/Documented/RToken/RToken.hpp"
 #include "Structures/Documented/VMBuffer/VMBuffer.hpp"
