@@ -73,7 +73,7 @@ namespace Utils::Logging
 
 		sFinalText += "Message: " + sMessage + "\n\n";
 
-		sFinalText += "Version: YYToolkit " + std::string(YYSDK_VERSION) + "\n";
+		sFinalText += "Version: YYToolkit " + std::string(API::GetSDKVersion()) + "\n";
 
 		if (API::gAPIVars.Globals.g_bWasPreloaded)
 			sFinalText += "Early Injection: Enabled\n";

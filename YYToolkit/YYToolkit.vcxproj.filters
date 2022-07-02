@@ -63,9 +63,6 @@
     <ClInclude Include="Src\Core\Utils\MH\trampoline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Core\Utils\Logging\Logging.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Core\Hooks\MessageBoxW\MessageBoxW.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -94,9 +91,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Core\SDK\Structures\Documented\CHashMap\CHashMap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Core\SDK\Structures\Documented\FunctionInfo\FunctionInfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Core\SDK\Structures\Documented\Math\Vector3D.hpp">
@@ -147,9 +141,6 @@
     <ClInclude Include="Src\Core\Features\API\API.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Core\Features\PluginManager\PluginManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Core\Features\UnitTests\UnitTests.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -162,10 +153,16 @@
     <ClInclude Include="Src\Core\Utils\PortableFileDialog\PFD.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Core\Features\PluginManager\Structures\PmStructures.hpp">
+    <ClInclude Include="Src\Core\SDK\Plugins\API Definitions\APIDefs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Core\SDK\Plugins\API Definitions\APIDefs.hpp">
+    <ClInclude Include="Src\Core\Utils\Logging\Logging.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Core\Utils\JSON\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Core\Features\PluginManager\PluginManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -212,9 +209,6 @@
     <ClCompile Include="Src\Core\Utils\MH\trampoline.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Utils\Logging\Logging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Core\Utils\Hashing\MurMurHash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -245,22 +239,22 @@
     <ClCompile Include="Src\Core\Features\API\API.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\Features\PluginManager\PluginManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Core\Features\UnitTests\UnitTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\Utils\WinAPI\WinAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Core\SDK\Plugins\Plugins.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Core\SDK\Plugins\API Definitions\APIDefs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Core\SDK\Structures\Documented\Math\Vector3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\Utils\Logging\Logging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Core\Features\PluginManager\PluginManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

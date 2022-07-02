@@ -24,7 +24,7 @@ bool API::GetFunctionByName(const std::string& Name, TRoutine& outRoutine)
 
 const char* API::GetSDKVersion()
 {
-	return YYSDK_VERSION;
+	return "3.0.0-beta2";
 }
 
 bool API::GetGlobalInstance(CInstance*& outInstance)

@@ -14,9 +14,6 @@ struct CDynamicArray;
 template <typename T>
 struct CDynamicArrayRef;
 
-// FunctionInfo.hpp
-struct FunctionInfo_t;
-
 // CHashMap.hpp
 template <typename Key, typename Value>
 struct CHashMap;
@@ -63,22 +60,17 @@ struct VMExec;
 #pragma endregion
 
 #pragma region Opaque
-struct PluginAttributes_t;
-struct CallbackAttributes_t;
+struct CPluginAttributes;
+struct CCallbackAttributes;
 #pragma endregion
 
-// Typedefs
+// TypedefsThin
 using TRoutine = void(__cdecl*)(RValue* _result, CInstance* _self, CInstance* _other, int _argc, RValue* _args);
 using PFUNC_YYGML = void(__cdecl*)(CInstance* _self, CInstance* _other);
 typedef void (*FNCodeFunctionGetTheFunction)(int id, char** bufName, void** bufRoutine, int* bufArgs, void* unused);
 typedef bool (*FNCodeExecute)(YYObjectBase* Self, YYObjectBase* Other, CCode* code, YYRValue* res, int flags);
 
-// Macros
-
-#define WIN32_LEAN_AND_MEAN 1
-#define YYTK_MAGIC 'TFSI'
-
-static const char* YYSDK_VERSION = "3.0.0-beta1";
+constexpr int YYSDK_VERSION = 1;
 
 // Macros, but complicated
 #ifdef _MSC_VER

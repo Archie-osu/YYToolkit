@@ -14,7 +14,7 @@ namespace Hooks
 				exit(0);
 
 			YYTKWindowProcEvent Event = YYTKWindowProcEvent(pfnOriginal, hwnd, Msg, w, l);
-			API::PluginManager::RunHooks(&Event);
+			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
 				return Event.GetReturn();

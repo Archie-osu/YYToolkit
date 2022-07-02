@@ -10,7 +10,7 @@ namespace Hooks
 		char* Function(CScript* pScript, int argc, char* pStackPointer, VMExec* pVM, YYObjectBase* pLocals, YYObjectBase* pArguments)
 		{
 			YYTKScriptEvent Event = YYTKScriptEvent(pfnOriginal, pScript, argc, pStackPointer, pVM, pLocals, pArguments);
-			API::PluginManager::RunHooks(&Event);
+			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
 				return Event.GetReturn();

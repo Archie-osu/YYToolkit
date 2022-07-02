@@ -1,32 +1,24 @@
-#pragma once
-#include "../../SDK/FwdDecls/FwdDecls.hpp"
-#include "Structures/PmStructures.hpp"
-
-namespace API 
+#ifndef _YYTK_CORE_PLUGINMANAGER_H_
+#define _YYTK_CORE_PLUGINMANAGER_H_
+#include <string>
+namespace PM
 {
-	namespace PluginManager 
+	struct JSONData
 	{
-		inline std::list<PluginAttributes_t> g_PluginStorage;
+		int Version; // YYTK major version supported by the mod
+		bool NeedsPreload; // True if the mod needs Early Launch
+		std::string ModID; // The actual ID of the mod - do not change once released!
+		std::string Name; // The user-readable name of the mod
+		std::string Description; // The description of the mod
+	};
 
-		YYTKPlugin* LoadPlugin(const wchar_t* Path);
-		bool UnloadPlugin(YYTKPlugin& pPlugin, bool Notify);
 
-		std::string GetPluginVersionString(HMODULE Plugin);
-		bool IsPluginCompatible(HMODULE Plugin);
 
-		void RunHooks(YYTKEventBase* pEvent);
-		void RunPluginMains();
-		void RunPluginPreloads();
+	bool ReadManifest(const wchar_t* FilePath, JSONData& Data);
 
-		void Initialize();
-		void Uninitialize();
+	bool WriteManifest(const wchar_t* FilePath, JSONData& Data);
 
-		DllExport YYTKStatus PmGetPluginAttributes(YYTKPlugin* pObject, PluginAttributes_t*& outAttributes);
-		DllExport YYTKStatus PmCreateCallback(PluginAttributes_t* pObjectAttributes, CallbackAttributes_t*& outAttributes, FNEventHandler pfnCallback, EventType Flags, void* OptionalArgument);
-		DllExport YYTKStatus PmRemoveCallback(CallbackAttributes_t* CallbackAttributes);
-		DllExport YYTKStatus PmSetExported(PluginAttributes_t* pObjectAttributes, const char* szRoutineName, void* pfnRoutine);
-		DllExport YYTKStatus PmGetExported(const char* szRoutineName, void*& pfnOutRoutine);
-		DllExport YYTKStatus PmLoadPlugin(const char* szPath, void*& pOutBaseAddress);
-		DllExport YYTKStatus PmUnloadPlugin(void* pBaseAddress);
-	}
+
 }
+
+#endif // _YYTK_CORE_PLUGINMANAGER_H_

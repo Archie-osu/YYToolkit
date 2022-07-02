@@ -13,7 +13,7 @@ namespace Hooks
 			// Call events scope
 			{
 				YYTKErrorEvent Event = YYTKErrorEvent(pfnOriginal, pFormat);
-				API::PluginManager::RunHooks(&Event);
+				//API::PluginManager::RunHooks(&Event);
 
 				if (Event.CalledOriginal())
 					return;

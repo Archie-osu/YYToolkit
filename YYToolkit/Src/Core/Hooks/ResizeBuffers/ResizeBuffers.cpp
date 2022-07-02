@@ -14,7 +14,7 @@ namespace Hooks
 			// Call events scope
 			{
 				YYTKResizeBuffersEvent Event = YYTKResizeBuffersEvent(pfnOriginal, _this, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-				API::PluginManager::RunHooks(&Event);
+				//API::PluginManager::RunHooks(&Event);
 
 				if (Event.CalledOriginal())
 					return Event.GetReturn();

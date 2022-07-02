@@ -16,7 +16,7 @@ namespace Hooks
 		{
 			YYTKPresentEvent Event = YYTKPresentEvent(pfnOriginal, _this, Sync, Flags);
 
-			API::PluginManager::RunHooks(&Event);
+			//API::PluginManager::RunHooks(&Event);
 
 			std::call_once(g_CreatedRenderView, [&]()
 				{

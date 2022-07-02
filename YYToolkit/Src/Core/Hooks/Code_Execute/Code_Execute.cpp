@@ -11,7 +11,7 @@ namespace Hooks
 		bool Function(CInstance* pSelf, CInstance* pOther, CCode* Code, RValue* Res, int Flags)
 		{
 			YYTKCodeEvent Event = YYTKCodeEvent(pfnOriginal, pSelf, pOther, Code, Res, Flags);
-			API::PluginManager::RunHooks(&Event);
+			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
 				return Event.GetReturn();

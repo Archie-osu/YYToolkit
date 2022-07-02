@@ -174,7 +174,6 @@
     <ClInclude Include="Src\Core\Features\Console\Console.hpp" />
     <ClInclude Include="Src\Core\Features\API\API.hpp" />
     <ClInclude Include="Src\Core\Features\PluginManager\PluginManager.hpp" />
-    <ClInclude Include="Src\Core\Features\PluginManager\Structures\PmStructures.hpp" />
     <ClInclude Include="Src\Core\Features\UnitTests\UnitTests.hpp" />
     <ClInclude Include="Src\Core\Hooks\Code_Execute\Code_Execute.hpp" />
     <ClInclude Include="Src\Core\Hooks\DoCallScript\DoCallScript.hpp" />
@@ -195,7 +194,6 @@
     <ClInclude Include="Src\Core\SDK\Structures\Documented\CCode\CCode.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\CDynamicArray\CDynamicArray.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\CHashMap\CHashMap.hpp" />
-    <ClInclude Include="Src\Core\SDK\Structures\Documented\FunctionInfo\FunctionInfo.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\Math\Vector3D.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\RefThing\RefThing.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Documented\RToken\RToken.hpp" />
@@ -207,6 +205,7 @@
     <ClInclude Include="Src\Core\SDK\Structures\Undocumented\YYObjectBase\YYObjectBase.hpp" />
     <ClInclude Include="Src\Core\SDK\Structures\Undocumented\YYVAR\YYVAR.hpp" />
     <ClInclude Include="Src\Core\Utils\D3D11 Hooker\D3D11Hooker.hpp" />
+    <ClInclude Include="Src\Core\Utils\JSON\json.hpp" />
     <ClInclude Include="Src\Core\Utils\Logging\Logging.hpp" />
     <ClInclude Include="Src\Core\Utils\MH\buffer.h" />
     <ClInclude Include="Src\Core\Utils\MH\hde\hde32.h" />
@@ -238,7 +237,6 @@
     <ClCompile Include="Src\Core\Hooks\WindowProc\WindowProc.cpp" />
     <ClCompile Include="Src\Core\Hooks\YYError\YYError.cpp" />
     <ClCompile Include="Src\Core\SDK\Plugins\API Definitions\APIDefs.cpp" />
-    <ClCompile Include="Src\Core\SDK\Plugins\Plugins.cpp" />
     <ClCompile Include="Src\Core\SDK\Structures\Documented\CDynamicArray\CDynamicArray.cpp" />
     <ClCompile Include="Src\Core\SDK\Structures\Documented\Math\Vector3D.cpp" />
     <ClCompile Include="Src\Core\SDK\Structures\Documented\RefThing\RefThing.cpp" />

@@ -169,7 +169,7 @@ void PrintMessageNoNewline(Color color, const char* fmt, ...)
 	return Func(color, Buf);
 }
 
-YYTKStatus PmGetPluginAttributes(YYTKPlugin* pObject, PluginAttributes_t*& outAttributes)
+YYTKStatus PmGetPluginAttributes(YYTKPlugin* pObject, CPluginAttributes*& outAttributes)
 {
 	HMODULE YYTKModule = GetYYTKModule();
 
@@ -178,7 +178,7 @@ YYTKStatus PmGetPluginAttributes(YYTKPlugin* pObject, PluginAttributes_t*& outAt
 	return Func(pObject, outAttributes);
 }
 
-YYTKStatus PmCreateCallback(PluginAttributes_t* pObjectAttributes, CallbackAttributes_t*& outAttributes, FNEventHandler pfnCallback, EventType Flags, void* OptionalArgument)
+YYTKStatus PmCreateCallback(CPluginAttributes* pObjectAttributes, CCallbackAttributes*& outAttributes, FNEventHandler pfnCallback, EventType Flags, void* OptionalArgument)
 {
 	HMODULE YYTKModule = GetYYTKModule();
 
@@ -187,7 +187,7 @@ YYTKStatus PmCreateCallback(PluginAttributes_t* pObjectAttributes, CallbackAttri
 	return Func(pObjectAttributes, outAttributes, pfnCallback, Flags, OptionalArgument);
 }
 
-YYTKStatus PmRemoveCallback(CallbackAttributes_t* CallbackAttributes)
+YYTKStatus PmRemoveCallback(CCallbackAttributes* CallbackAttributes)
 {
 	HMODULE YYTKModule = GetYYTKModule();
 
@@ -196,7 +196,7 @@ YYTKStatus PmRemoveCallback(CallbackAttributes_t* CallbackAttributes)
 	return Func(CallbackAttributes);
 }
 
-YYTKStatus PmSetExported(PluginAttributes_t* pObjectAttributes, const char* szRoutineName, void* pfnRoutine)
+YYTKStatus PmSetExported(CPluginAttributes* pObjectAttributes, const char* szRoutineName, void* pfnRoutine)
 {
 	HMODULE YYTKModule = GetYYTKModule();
 

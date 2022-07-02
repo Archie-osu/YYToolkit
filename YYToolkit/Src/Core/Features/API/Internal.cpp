@@ -44,7 +44,7 @@ YYTKStatus API::Internal::__Initialize__(HMODULE hMainModule)
 
 	__InitializeGlobalVars__();
 	Tests::RunUnitTests();
-	PluginManager::RunPluginMains();
+	//PluginManager::RunPluginMains();
 
 	return YYTK_OK;
 }
@@ -106,7 +106,7 @@ YYTKStatus API::Internal::__InitializeConsole__()
 
 	// Set console title scope
 	{
-		std::string sTitleString = std::string("YYToolkit Log (v") + YYSDK_VERSION + ")";
+		std::string sTitleString = std::string("YYToolkit Log (v") + GetSDKVersion() + ")";
 #ifdef _WIN64
 		sTitleString.append(" - x64");
 #endif
@@ -132,7 +132,7 @@ YYTKStatus API::Internal::__InitializeConsole__()
 
 YYTKStatus API::Internal::__Unload__()
 {
-	PluginManager::Uninitialize();
+	//PluginManager::Uninitialize();
 
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	FreeConsole();
