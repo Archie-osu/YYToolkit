@@ -1,167 +1,125 @@
-#include "WinAPI.hpp"
 #include "../../Features/API/Internal.hpp"
-#include <cstdint>
+#include "WinAPI.hpp"
+#include <Psapi.h>
 
-#define STATUS_INFO_LENGTH_MISMATCH 0xc0000004
-
-bool Utils::WinAPI::GetSysProcInfo(SYSTEM_PROCESS_INFORMATION** outInfo)
+namespace Utils
 {
-	uint32_t size = sizeof(SYSTEM_PROCESS_INFORMATION);
-
-	SYSTEM_PROCESS_INFORMATION* spi = (SYSTEM_PROCESS_INFORMATION*)malloc(sizeof(SYSTEM_PROCESS_INFORMATION));
-
-	// We don't know how big the process list is, so we have to reallocate until we find it.
-	NTSTATUS Status = 0;
-	while ((Status = NtQuerySystemInformation(SystemProcessInformation, spi, size, NULL)) == STATUS_INFO_LENGTH_MISMATCH)
-		spi = (SYSTEM_PROCESS_INFORMATION*)realloc(spi, size *= 2);
-
-	if (NT_SUCCESS(Status))
+	namespace WinAPI
 	{
-		*outInfo = spi;
-		return true;
-	}
-	
-	return false;
-}
-
-bool Utils::WinAPI::GetThreadStartAddr(HANDLE ThreadHandle, uintptr_t& outAddr)
-{
-	NTSTATUS Status = NtQueryInformationThread(ThreadHandle, (THREADINFOCLASS)9 /*ThreadQuerySetWin32StartAddress*/, &outAddr, sizeof(uintptr_t), nullptr);
-
-	return NT_SUCCESS(Status);
-}
-
-void Utils::WinAPI::IterateProcesses(FNProcessIterationFunc IteratorFunction, void* pParameter)
-{
-	Utils::WinAPI::SYSTEM_PROCESS_INFORMATION* pSpi = nullptr;
-
-	if (!Utils::WinAPI::GetSysProcInfo(&pSpi))
-		return;
-
-	void* pFreeAddress = pSpi;
-
-	CModule GameModule{};
-	YYTKStatus stMMGM = API::Internal::MmGetModuleInformation(nullptr, GameModule);
-
-	if (stMMGM)
-	{
-		free(pFreeAddress);
-		return;
-	}
-	
-	do
-	{
-		IteratorFunction(pSpi, pParameter);
-		pSpi = reinterpret_cast<SYSTEM_PROCESS_INFORMATION*>(reinterpret_cast<PBYTE>(pSpi) + pSpi->NextEntryOffset);
-
-	} while (pSpi->NextEntryOffset && pSpi);
-
-	free(pFreeAddress);
-}
-
-bool Utils::WinAPI::IsPreloaded()
-{
-	FNProcessIterationFunc Func = [](void* pProcessInformation, void* pParam)
-	{
-		// Cast the pProcessInformation pointer to its actual type
-		namespace WinAPI = Utils::WinAPI;
-		WinAPI::SYSTEM_PROCESS_INFORMATION* pSPI = reinterpret_cast<WinAPI::SYSTEM_PROCESS_INFORMATION*>(pProcessInformation);
-
-		// If it's nullptr (we failed to capture processes or some corruption occured)
-		if (pSPI == nullptr)
-			return;
-
-		// Get information about the game process
-		CModule GameModule;
-		API::Internal::MmGetModuleInformation(nullptr, GameModule);
-
-		// Get the PID of the current process entry
-		uintptr_t pSPI_PID = reinterpret_cast<uintptr_t>(pSPI->ProcessId);
-
-		// Check if it's the game process, if not, go to the next one
-		if (pSPI_PID != GetCurrentProcessId())
-			return;
-
-		for (int i = 0; i < pSPI->NumberOfThreads; i++)
+		// Returns the start address of a thread based off it's handle
+		NTSTATUS QueryThreadStartAddress(HANDLE ThreadHandle, uintptr_t& outAddr)
 		{
-			// Open the current thread
-			HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, reinterpret_cast<uintptr_t>(pSPI->Threads[i].ClientId.UniqueThread));
+			return NtQueryInformationThread(
+				ThreadHandle, 
+				(THREADINFOCLASS)9 /*ThreadQuerySetWin32StartAddress*/, 
+				&outAddr, 
+				sizeof(uintptr_t), 
+				nullptr
+			);
+		}
 
-			// Get its start address
-			uintptr_t dwThreadStartAddress = 0;
-			bool bSuccess = WinAPI::GetThreadStartAddr(hThread, dwThreadStartAddress);
+		// Allocates a buffer containing information about all the processes
+		SystemProcessInformation_t* GetProcessInformation()
+		{
+			SystemProcessInformation_t* Information = nullptr;
+			ULONG RequestedSize = 0;
 
-			CloseHandle(hThread);
+			// Request the size
+			NtQuerySystemInformation(
+				SystemProcessInformation,
+				Information,
+				0,
+				&RequestedSize
+			);
 
-			// If we failed getting the thread's start address, go to the next thread
-			if (!bSuccess)
-				continue;
+			// We couldn't get a size
+			if (RequestedSize == 0)
+				return nullptr;
 
-			// If the thread's supposed to start in main()
-			if (dwThreadStartAddress == GameModule.EntryPoint)
+			// Allocate the requested bytes
+			Information = reinterpret_cast<SystemProcessInformation_t*>(malloc(RequestedSize));
+
+			// Get the actual information
+			NTSTATUS Status = NtQuerySystemInformation(
+				SystemProcessInformation,
+				Information,
+				RequestedSize,
+				nullptr
+			);
+			
+			if (NT_SUCCESS(Status))
+				return Information;
+
+			free(Information);
+			return nullptr;
+		}
+
+		SystemProcessInformation_t* GetProcessEntry(SystemProcessInformation_t* ProcessInformation, uint32_t PID)
+		{
+			while (ProcessInformation->NextEntryOffset)
 			{
-				// Check if the thread is waiting and is suspended
-				if (pSPI->Threads[i].State != Utils::WinAPI::KTHREAD_STATE::Waiting)
-					return;
+				if (reinterpret_cast<uint32_t>(ProcessInformation->ProcessId) == PID)
+					return ProcessInformation;
 
-				if (pSPI->Threads[i].WaitReason != Utils::WinAPI::KWAIT_REASON::Suspended)
-					return;
-
-				// If we didn't return, it's sleeping - return true.
-				*reinterpret_cast<bool*>(pParam) = true;
+				// Advance to the next entry
+				ProcessInformation = reinterpret_cast<SystemProcessInformation_t*>(
+					reinterpret_cast<PBYTE>(ProcessInformation) + ProcessInformation->NextEntryOffset
+				);
 			}
+
+			// Check the last entry in the list (probs not it but let's be safe)
+			if (reinterpret_cast<uint32_t>(ProcessInformation->ProcessId) == PID)
+				return ProcessInformation;
+
+			return nullptr;
 		}
-	};
 
-	bool bReturnValue = false;
-	Utils::WinAPI::IterateProcesses(Func, &bReturnValue);
-
-	return bReturnValue;
-}
-
-// Basically a big copy pasterino from the IsPreloaded function lol
-void Utils::WinAPI::ResumeGameProcess()
-{
-	FNProcessIterationFunc Func = [](void* pProcessInformation, void* pParam)
-	{
-		CModule& GameModule = *reinterpret_cast<CModule*>(pParam);
-
-		// Cast the pProcessInformation pointer to its actual type
-		namespace WinAPI = Utils::WinAPI;
-		WinAPI::SYSTEM_PROCESS_INFORMATION* pSPI = reinterpret_cast<WinAPI::SYSTEM_PROCESS_INFORMATION*>(pProcessInformation);
-
-		// If it's nullptr (we failed to capture processes or some corruption occured)
-		if (pSPI == nullptr)
-			return;
-
-		// Get the PID of the current process entry
-		uintptr_t pSPI_PID = reinterpret_cast<uintptr_t>(pSPI->ProcessId);
-
-		// Check if it's the game process, if not, go to the next one
-		if (pSPI_PID != GetCurrentProcessId())
-			return;
-
-		for (int i = 0; i < pSPI->NumberOfThreads; i++)
+		bool IsMainProcessSuspended()
 		{
-			// Open the current thread
-			HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, reinterpret_cast<uintptr_t>(pSPI->Threads[i].ClientId.UniqueThread));
+			// Get the game process
+			auto ProcessInformation = GetProcessInformation();
 
-			// Get its start address
-			uintptr_t dwThreadStartAddress = 0;
-			WinAPI::GetThreadStartAddr(hThread, dwThreadStartAddress);
+			if (!ProcessInformation)
+				return false;
 
-			// If the thread's supposed to start in main(), resume it
-			if (dwThreadStartAddress == GameModule.EntryPoint)
-				ResumeThread(hThread);
+			auto GameProcess = GetProcessEntry(ProcessInformation, GetCurrentProcessId());
 
-			// Close the handle
-			CloseHandle(hThread);
+			if (!GameProcess)
+				return false;
+
+			MODULEINFO GameProcessInfo;
+			GetModuleInformation(GetCurrentProcess(), GetModuleHandleA(nullptr), &GameProcessInfo, sizeof(MODULEINFO));
+
+			for (size_t i = 0; i < GameProcess->NumberOfThreads; i++)
+			{
+				// Open the thread
+				HANDLE hThread = OpenThread(
+					THREAD_ALL_ACCESS, 
+					FALSE, 
+					reinterpret_cast<DWORD>(GameProcess->Threads[i].ClientId.UniqueThread)
+				);
+
+				uintptr_t ThreadStart = 0;
+				// If we can't get the thread start address, skip the thread
+				if (!NT_SUCCESS(QueryThreadStartAddress(hThread, ThreadStart)))
+				{
+					CloseHandle(hThread);
+					continue;
+				}
+
+				if (ThreadStart != reinterpret_cast<uintptr_t>(GameProcessInfo.EntryPoint))
+				{
+					CloseHandle(hThread);
+					continue;
+				}
+
+				CloseHandle(hThread);
+				return (GameProcess->Threads[i].State == KThreadState::Waiting) &&
+					(GameProcess->Threads[i].WaitReason == KWaitReason::Suspended);
+			}
+
+			return false;
 		}
-	};
-
-	// Get information about the game process
-	CModule GameModule;
-	API::Internal::MmGetModuleInformation(nullptr, GameModule);
-
-	Utils::WinAPI::IterateProcesses(Func, &GameModule);
+	}
 }
+

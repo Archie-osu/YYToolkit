@@ -1,6 +1,7 @@
 #ifndef _YYTK_CORE_PLUGINMANAGER_H_
 #define _YYTK_CORE_PLUGINMANAGER_H_
 #include <string>
+#include <functional>
 namespace PM
 {
 	struct JSONData
@@ -12,13 +13,17 @@ namespace PM
 		std::string Description; // The description of the mod
 	};
 
+	struct ModEntry
+	{
+		uintptr_t ModuleBase;
+		//std::function whatever
+		JSONData Data;
+	};
 
+	bool ReadManifest(const wchar_t* FilePath, JSONData& outData);
+	bool WriteManifest(const wchar_t* FilePath, JSONData& outData);
 
-	bool ReadManifest(const wchar_t* FilePath, JSONData& Data);
-
-	bool WriteManifest(const wchar_t* FilePath, JSONData& Data);
-
-
+	bool CreatePluginData(const wchar_t* FolderPath, ModEntry& outEntry);
 }
 
 #endif // _YYTK_CORE_PLUGINMANAGER_H_

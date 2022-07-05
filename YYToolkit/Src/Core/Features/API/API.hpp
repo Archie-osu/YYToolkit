@@ -54,20 +54,8 @@ namespace API
 	);
 
 	DllExport void PrintMessage(
+		/* TODO: Severity severity */
 		Color color,
-		const char* fmt,
-		...
-	);
-
-	DllExport void PrintMessageNoNewline(
-		Color color,
-		const char* fmt,
-		...
-	);
-
-	DllExport void PrintError(
-		const char* File,
-		const int& Line,
 		const char* fmt,
 		...
 	);

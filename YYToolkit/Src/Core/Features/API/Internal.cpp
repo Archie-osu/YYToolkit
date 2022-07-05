@@ -1,5 +1,6 @@
 #include "../PluginManager/PluginManager.hpp"
 #include "../../Utils/Logging/Logging.hpp"
+#include "../../Utils/WinAPI/WinAPI.hpp"
 #include "../../Utils/MH/hde/hde32.h"
 #include "../UnitTests/UnitTests.hpp"
 #include "Internal.hpp"
@@ -451,7 +452,7 @@ YYTKStatus API::Internal::VfGetIdByName(YYObjectBase* pObject, const char* szNam
 	return YYTK_OK;
 }
 
-DllExport YYTKStatus API::Internal::VfGetAPIState(CAPIVars*& outState)
+YYTKStatus API::Internal::VfGetAPIState(CAPIVars*& outState)
 {
 	outState = &gAPIVars;
 	return YYTK_OK;

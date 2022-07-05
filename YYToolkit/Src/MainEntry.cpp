@@ -5,6 +5,7 @@
 #include "Core/Utils/WinAPI/WinAPI.hpp"
 #include "Core/Hooks/Hooks.hpp"
 #include <Dbghelp.h>
+#include <Psapi.h>
 #if _WIN64
 //#error Don't compile in x64! // What if I do anyway
 #endif
@@ -46,13 +47,20 @@ void __stdcall Main(HINSTANCE g_hDLL)
 	//PluginManager::Initialize();
 
 	// If we're using Early Launch
-	if (Utils::WinAPI::IsPreloaded())
+	if (Utils::WinAPI::IsMainProcessSuspended())
 	{
+		Utils::Logging::Message(CLR_DEFAULT, "early launch detected");
+
+		using pfnNtResumeProcess = LONG(NTAPI*)(HANDLE ProcessHandle);
+		auto NtResumeProcess = (pfnNtResumeProcess)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtResumeProcess");
+
+		NtResumeProcess(GetCurrentProcess());
+
 		// Run PluginPreload() on all loaded plugins
 		//PluginManager::RunPluginPreloads();
 
 		// Resume the game process and note that we preloaded.
-		Utils::WinAPI::ResumeGameProcess();
+		
 		gAPIVars.Globals.g_bWasPreloaded = true;
 	}
 
