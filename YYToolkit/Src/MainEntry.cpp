@@ -6,9 +6,6 @@
 #include "Core/Hooks/Hooks.hpp"
 #include <Dbghelp.h>
 #include <Psapi.h>
-#if _WIN64
-//#error Don't compile in x64! // What if I do anyway
-#endif
 
 LONG WINAPI WhenIMakeAFuckyWucky(struct _EXCEPTION_POINTERS* apExceptionInfo)
 {
@@ -49,8 +46,6 @@ void __stdcall Main(HINSTANCE g_hDLL)
 	// If we're using Early Launch
 	if (Utils::WinAPI::IsMainProcessSuspended())
 	{
-		Utils::Logging::Message(CLR_DEFAULT, "early launch detected");
-
 		using pfnNtResumeProcess = LONG(NTAPI*)(HANDLE ProcessHandle);
 		auto NtResumeProcess = (pfnNtResumeProcess)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtResumeProcess");
 
