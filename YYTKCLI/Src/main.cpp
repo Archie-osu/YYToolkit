@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	std::string NewProcessArguments = RunnerPath;
+	std::string NewProcessArguments = "\"" + RunnerPath + "\"";
 	std::string RunnerDirectory;
 
 	try
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 	PROCESS_INFORMATION ProcessInformation;
 
 	BOOL Success = CreateProcessA(
-		RunnerPath.c_str(),
+		nullptr /* fuck you microsoft */,
 		NewProcessArguments.data(),
 		nullptr,
 		nullptr,
