@@ -2,28 +2,44 @@
 #define _YYTK_CORE_PLUGINMANAGER_H_
 #include <string>
 #include <functional>
+#include <vector>
+#include <list>
 namespace PM
 {
 	struct JSONData
 	{
-		int Version; // YYTK major version supported by the mod
+		int ApiVersion; // YYTK API version supported by the mod
 		bool NeedsPreload; // True if the mod needs Early Launch
 		std::string ModID; // The actual ID of the mod - do not change once released!
 		std::string Name; // The user-readable name of the mod
 		std::string Description; // The description of the mod
+		std::vector<std::string> Exports; // Names of functions exported by the module
 	};
 
-	struct ModEntry
+	struct PluginDescriptor
+	{
+		std::function<void(PluginDescriptor&)> m_ModPreload;
+		std::function<void(PluginDescriptor&)> m_ModEntry;
+		std::function<void(PluginDescriptor&)> m_ModUnload;
+	};
+
+	struct PluginDataInternal
 	{
 		uintptr_t ModuleBase;
-		//std::function whatever
+		PluginDescriptor Descriptor;
 		JSONData Data;
 	};
 
-	bool ReadManifest(const wchar_t* FilePath, JSONData& outData);
-	bool WriteManifest(const wchar_t* FilePath, JSONData& outData);
+	inline std::list<PluginDataInternal> g_Plugins;
 
-	bool CreatePluginData(const wchar_t* FolderPath, ModEntry& outEntry);
+	bool ReadManifest(const std::wstring& FilePath, JSONData& outData);
+	bool WriteManifest(const std::wstring& FilePath, JSONData& outData);
+
+	bool IsPEArchitectureCompatible(const std::wstring& FilePath);
+
+	bool LoadPlugin(const std::wstring& FilePath, const JSONData& JsonData, PluginDataInternal& InternalData);
+
+	void Initialize(const std::wstring& FolderName);
 }
 
 #endif // _YYTK_CORE_PLUGINMANAGER_H_

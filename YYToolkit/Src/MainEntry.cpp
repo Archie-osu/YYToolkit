@@ -46,16 +46,12 @@ void __stdcall Main(HINSTANCE g_hDLL)
 	// If we're using Early Launch
 	if (Utils::WinAPI::IsMainProcessSuspended())
 	{
-		using pfnNtResumeProcess = LONG(NTAPI*)(HANDLE ProcessHandle);
-		auto NtResumeProcess = (pfnNtResumeProcess)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtResumeProcess");
-
-		NtResumeProcess(GetCurrentProcess());
-
 		// Run PluginPreload() on all loaded plugins
 		//PluginManager::RunPluginPreloads();
 
 		// Resume the game process and note that we preloaded.
-		
+		Utils::WinAPI::ResumeGameProcess();
+
 		gAPIVars.Globals.g_bWasPreloaded = true;
 	}
 

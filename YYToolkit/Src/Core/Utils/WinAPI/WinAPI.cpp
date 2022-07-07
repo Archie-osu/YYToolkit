@@ -120,6 +120,19 @@ namespace Utils
 
 			return false;
 		}
+
+		void ResumeGameProcess()
+		{
+			using pfnNtResumeProcess = LONG(NTAPI*)(HANDLE ProcessHandle);
+			FARPROC fpResumeProcess = GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtResumeProcess");
+
+			if (!fpResumeProcess)
+				return;
+
+			pfnNtResumeProcess NtResumeProcess = reinterpret_cast<pfnNtResumeProcess>(fpResumeProcess);
+
+			NtResumeProcess(GetCurrentProcess());
+		}
 	}
 }
 

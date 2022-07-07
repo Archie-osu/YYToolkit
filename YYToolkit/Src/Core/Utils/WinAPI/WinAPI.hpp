@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _YYTK_UTILS_WINAPI_H_
+#define _YYTK_UTILS_WINAPI_H_
+
 #include <Windows.h>
 #include <winternl.h>
 #include <cstdint>
@@ -126,5 +128,9 @@ namespace Utils
 		SystemProcessInformation_t* GetProcessEntry(SystemProcessInformation_t* ProcessInformation, uint32_t PID);
 
 		bool IsMainProcessSuspended();
+
+		void ResumeGameProcess();
 	}
 }
+
+#endif // _YYTK_UTILS_WINAPI_H_

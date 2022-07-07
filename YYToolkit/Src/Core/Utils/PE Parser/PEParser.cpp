@@ -1,7 +1,7 @@
 #include "PEParser.hpp"
 #include <fstream>
 
-DWORD Utils::RVA_To_Offset(PIMAGE_NT_HEADERS pNTHeader, DWORD dwRVA)
+DWORD Utils::PE::RVA_To_Offset(PIMAGE_NT_HEADERS pNTHeader, DWORD dwRVA)
 {
 	PIMAGE_SECTION_HEADER pHeaders = IMAGE_FIRST_SECTION(pNTHeader);
 
@@ -20,13 +20,13 @@ DWORD Utils::RVA_To_Offset(PIMAGE_NT_HEADERS pNTHeader, DWORD dwRVA)
 	return 0;
 }
 
-bool Utils::DoesPEExportRoutine(const wchar_t* FilePath, const char* RoutineName)
+bool Utils::PE::DoesPEExportRoutine(const wchar_t* FilePath, const char* RoutineName)
 {
 	// Open the file
 	std::ifstream fFileStream(FilePath, std::ios::binary | std::ios::ate);
 
 	// If the file failed to open
-	if (!fFileStream.is_open())
+	if (!fFileStream.is_open() || fFileStream.bad())
 		return false;
 
 	std::streampos spFileSize = fFileStream.tellg();
@@ -135,4 +135,73 @@ bool Utils::DoesPEExportRoutine(const wchar_t* FilePath, const char* RoutineName
 
 	delete[] pSource;
 	return false;
+}
+
+bool Utils::PE::IsPEx64(const wchar_t* FilePath)
+{
+	// Open the file
+	std::ifstream fFileStream(FilePath, std::ios::binary | std::ios::ate);
+
+	// If the file failed to open
+	if (!fFileStream.is_open() || fFileStream.bad())
+		return false;
+
+	std::streampos spFileSize = fFileStream.tellg();
+
+	// If the file is below 4kB
+	if (spFileSize <= 4096)
+		return false;
+
+	BYTE* pSource = new BYTE[static_cast<UINT>(spFileSize)];
+
+	if (!pSource)
+		return false;
+
+	// Go to the beginning
+	fFileStream.seekg(0, std::ios::beg);
+
+	// Read the whole file and copy the contents into pSource
+	fFileStream.read(reinterpret_cast<char*>(pSource), spFileSize);
+
+	// Cast the beginning of the PE file to a DOS Header
+	PIMAGE_DOS_HEADER pDosHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(pSource);
+
+	// If a cosmic ray flipped some bits
+	if (!pDosHeader)
+	{
+		if (pSource)
+			delete[] pSource;
+
+		return false;
+	}
+
+	//MZ backwards because of endianness reasons
+	if (pDosHeader->e_magic != IMAGE_DOS_SIGNATURE)
+	{
+		delete[] pSource;
+		return false;
+	}
+
+	// Follow DOS->pPEHeader and cast it to the right type
+	PIMAGE_NT_HEADERS pNTHeader = reinterpret_cast<PIMAGE_NT_HEADERS>(pSource + pDosHeader->e_lfanew);
+
+	// If there's no NT Headers
+	if (!pNTHeader)
+	{
+		delete[] pSource;
+		return false;
+	}
+
+	// Check for PE sig
+	if (pNTHeader->Signature != IMAGE_NT_SIGNATURE)
+	{
+		delete[] pSource;
+		return false;
+	}
+
+	bool bReturnFlag = pNTHeader->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64;
+
+	delete[] pSource;
+
+	return bReturnFlag;
 }
