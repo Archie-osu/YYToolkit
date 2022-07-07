@@ -98,8 +98,6 @@ namespace PM
 
 		// PluginEntry in older terms
 		YYTKFunc ModEntry = reinterpret_cast<YYTKFunc>(GetProcAddress(hModule, "ModEntry"));
-		YYTKFunc ModPreload = reinterpret_cast<YYTKFunc>(GetProcAddress(hModule, "ModPreload"));
-
 		if (ModEntry == nullptr)
 		{
 			Utils::Logging::Error(__FILE__, __LINE__, "Plugin \"%s\" not loaded - entry routine not found",
@@ -109,7 +107,14 @@ namespace PM
 			FreeLibrary(hModule);
 			return false;
 		}
+		InternalData.Descriptor.m_ModEntry = ModEntry;
 
+		// We're done if we don't need to worry about Early Launch stuff
+		if (!JsonData.NeedsPreload)
+			return true;
+
+		// PluginPreload in older terms
+		YYTKFunc ModPreload = reinterpret_cast<YYTKFunc>(GetProcAddress(hModule, "ModPreload"));
 		if (ModPreload == nullptr)
 		{
 			Utils::Logging::Error(__FILE__, __LINE__, "Plugin \"%s\" not loaded - preload routine not found",
@@ -119,9 +124,8 @@ namespace PM
 			FreeLibrary(hModule);
 			return false;
 		}
-
-		InternalData.Descriptor.m_ModEntry = ModEntry;
 		InternalData.Descriptor.m_ModPreload = ModPreload;
+		
 		return true;
 	}
 
@@ -214,7 +218,7 @@ namespace PM
 						continue;
 					}
 
-					if (!Utils::PE::DoesPEExportRoutine(PotentialPluginFile.wstring().c_str(), "ModInitialize"))
+					if (!Utils::PE::DoesPEExportRoutine(PotentialPluginFile.wstring().c_str(), "ModEntry"))
 					{
 						Utils::Logging::Error(__FILE__, __LINE__, "Plugin \"%s\" not loaded - incorrect format",
 							Data.Name.c_str()
@@ -222,7 +226,7 @@ namespace PM
 						continue;
 					}
 
-					if (!Utils::PE::DoesPEExportRoutine(PotentialPluginFile.wstring().c_str(), "ModPreload") && Data.NeedsPreload)
+					if (Data.NeedsPreload && (!Utils::PE::DoesPEExportRoutine(PotentialPluginFile.wstring().c_str(), "ModPreload")))
 					{
 						Utils::Logging::Error(__FILE__, __LINE__, "Plugin \"%s\" not loaded - incorrect format",
 							Data.Name.c_str()
