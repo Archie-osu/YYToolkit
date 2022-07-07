@@ -105,6 +105,8 @@ namespace PM
 			Utils::Logging::Error(__FILE__, __LINE__, "Plugin \"%s\" not loaded - entry routine not found",
 				JsonData.Name.c_str()
 			);
+			
+			FreeLibrary(hModule);
 			return false;
 		}
 
@@ -113,12 +115,43 @@ namespace PM
 			Utils::Logging::Error(__FILE__, __LINE__, "Plugin \"%s\" not loaded - preload routine not found",
 				JsonData.Name.c_str()
 			);
+
+			FreeLibrary(hModule);
 			return false;
 		}
 
 		InternalData.Descriptor.m_ModEntry = ModEntry;
 		InternalData.Descriptor.m_ModPreload = ModPreload;
 		return true;
+	}
+
+	bool UnloadPlugin(const std::string& ModID)
+	{
+		for (auto& Plugin : g_Plugins)
+		{
+			if (ModID != Plugin.Data.ModID)
+				continue;
+
+			if (Plugin.Descriptor.m_ModUnload)
+				Plugin.Descriptor.m_ModUnload(Plugin.Descriptor);
+
+			return FreeLibrary(reinterpret_cast<HMODULE>(Plugin.ModuleBase));
+		}
+
+		return false;
+	}
+
+	void InvokeModEntryRoutines()
+	{
+		for (auto& Plugin : g_Plugins)
+				Plugin.Descriptor.m_ModEntry(Plugin.Descriptor);
+	}
+
+	void InvokeModPreloadRoutines()
+	{
+		for (auto& Plugin : g_Plugins)
+			if (Plugin.Data.NeedsPreload)
+				Plugin.Descriptor.m_ModPreload(Plugin.Descriptor);
 	}
 
 	void Initialize(const std::wstring& FolderName)
@@ -214,5 +247,14 @@ namespace PM
 			Utils::Logging::Error(__FILE__, __LINE__, "Unexpected error while loading plugins - %s", ex.what());
 		}
 	}
-}
+	void Uninitialize()
+	{
+		for (auto it = g_Plugins.begin(); it != g_Plugins.end();)
+		{
+			UnloadPlugin(it->Data.ModID);
+			it = g_Plugins.erase(it);
+		}
 
+		g_Plugins.clear(); // Just in case.
+	}
+}

@@ -38,8 +38,13 @@ namespace PM
 	bool IsPEArchitectureCompatible(const std::wstring& FilePath);
 
 	bool LoadPlugin(const std::wstring& FilePath, const JSONData& JsonData, PluginDataInternal& InternalData);
+	bool UnloadPlugin(const std::string& ModID);
+
+	void InvokeModEntryRoutines();
+	void InvokeModPreloadRoutines();
 
 	void Initialize(const std::wstring& FolderName);
+	void Uninitialize();
 }
 
 #endif // _YYTK_CORE_PLUGINMANAGER_H_

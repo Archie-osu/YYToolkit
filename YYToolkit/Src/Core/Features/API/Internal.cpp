@@ -45,7 +45,7 @@ YYTKStatus API::Internal::__Initialize__(HMODULE hMainModule)
 
 	__InitializeGlobalVars__();
 	Tests::RunUnitTests();
-	//PluginManager::RunPluginMains();
+	PM::InvokeModEntryRoutines();
 
 	return YYTK_OK;
 }
@@ -133,7 +133,7 @@ YYTKStatus API::Internal::__InitializeConsole__()
 
 YYTKStatus API::Internal::__Unload__()
 {
-	//PluginManager::Uninitialize();
+	PM::Uninitialize();
 
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	FreeConsole();

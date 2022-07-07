@@ -41,13 +41,13 @@ void __stdcall Main(HINSTANCE g_hDLL)
 	Internal::__InitializeConsole__();
 
 	// Map all the auto-executed plugins to memory, don't run any functions though
-	//PluginManager::Initialize();
+	PM::Initialize(L"plugins");
 
 	// If we're using Early Launch
 	if (Utils::WinAPI::IsMainProcessSuspended())
 	{
 		// Run PluginPreload() on all loaded plugins
-		//PluginManager::RunPluginPreloads();
+		PM::InvokeModPreloadRoutines();
 
 		// Resume the game process and note that we preloaded.
 		Utils::WinAPI::ResumeGameProcess();
