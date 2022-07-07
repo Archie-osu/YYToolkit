@@ -2,7 +2,7 @@
 #include "../../Features/API/API.hpp"
 #include "../../Utils/Logging/Logging.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 namespace Hooks
 {
@@ -12,7 +12,7 @@ namespace Hooks
 		{
 			// Call events scope
 			{
-				YYTKErrorEvent Event = YYTKErrorEvent(pfnOriginal, pFormat);
+				FWYYError Event(pfnOriginal, pFormat);
 				//API::PluginManager::RunHooks(&Event);
 
 				if (Event.CalledOriginal())

@@ -27,6 +27,6 @@
 
 // Plugins.. duh
 #include "Plugins/Plugins.hpp"
-#include "Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "Plugins/FunctionWrapper/FunctionWrapper.hpp"
 // This only does shit if we're in a plugin
 #include "Plugins/API Definitions/APIDefs.hpp" 

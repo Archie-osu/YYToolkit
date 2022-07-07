@@ -2,7 +2,7 @@
 #include "../../Features/API/API.hpp"
 #include "../../Utils/Logging/Logging.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 namespace Hooks
 {
@@ -10,11 +10,11 @@ namespace Hooks
 	{
 		HRESULT __stdcall Function(LPDIRECT3DDEVICE9 _this)
 		{
-			YYTKEndSceneEvent Event = YYTKEndSceneEvent(pfnOriginal, _this);
+			FWEndScene Event(pfnOriginal, _this);
 			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
-				return Event.GetReturn();
+				return Event.Result();
 
 			return pfnOriginal(_this);
 		}

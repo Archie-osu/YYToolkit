@@ -75,7 +75,7 @@
     <ClInclude Include="Src\Core\SDK\FwdDecls\FwdDecls.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Core\SDK\Plugins\YYTKEvent\YYTKEvent.hpp">
+    <ClInclude Include="Src\Core\SDK\Plugins\FunctionWrapper\FunctionWrapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Core\SDK\Plugins\Plugins.hpp">

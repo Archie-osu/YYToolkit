@@ -59,11 +59,6 @@ struct VMExec;
 
 #pragma endregion
 
-#pragma region Opaque
-struct CPluginAttributes;
-struct CCallbackAttributes;
-#pragma endregion
-
 // TypedefsThin
 using TRoutine = void(__cdecl*)(RValue* _result, CInstance* _self, CInstance* _other, int _argc, RValue* _args);
 using PFUNC_YYGML = void(__cdecl*)(CInstance* _self, CInstance* _other);

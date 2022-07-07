@@ -56,47 +56,6 @@ void PrintMessage(
 	...
 );
 
-void PrintError(
-	const char* File,
-	const int& Line,
-	const char* fmt,
-	...
-);
-
-void PrintMessageNoNewline(
-	Color color,
-	const char* fmt,
-	...
-);
-
-YYTKStatus PmGetPluginAttributes(
-	YYTKPlugin* pObject,
-	PluginAttributes_t*& outAttributes
-);
-
-YYTKStatus PmCreateCallback(
-	PluginAttributes_t* pObjectAttributes, 
-	CallbackAttributes_t*& outAttributes, 
-	FNEventHandler pfnCallback,
-	EventType Flags, 
-	void* OptionalArgument
-);
-
-YYTKStatus PmRemoveCallback(
-	CallbackAttributes_t* CallbackAttributes
-);
-
-YYTKStatus PmSetExported(
-	PluginAttributes_t* pObjectAttributes, 
-	const char* szRoutineName, 
-	void* pfnRoutine
-);
-
-YYTKStatus PmGetExported(
-	const char* szRoutineName, 
-	void*& pfnOutRoutine
-);
-
 YYTKStatus PmLoadPlugin(
 	const char* szPath,
 	void*& pOutBaseAddress

@@ -1,7 +1,7 @@
 #include "MessageBoxW.hpp"
 #include "../../Features/API/API.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 #include <string>
 
 namespace Hooks

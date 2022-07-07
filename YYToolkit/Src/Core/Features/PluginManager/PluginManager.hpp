@@ -1,5 +1,6 @@
 #ifndef _YYTK_CORE_PLUGINMANAGER_H_
 #define _YYTK_CORE_PLUGINMANAGER_H_
+#include "../../SDK/Plugins/Plugins.hpp"
 #include <string>
 #include <functional>
 #include <vector>
@@ -16,17 +17,10 @@ namespace PM
 		std::vector<std::string> Exports; // Names of functions exported by the module
 	};
 
-	struct PluginDescriptor
-	{
-		std::function<void(PluginDescriptor&)> m_ModPreload;
-		std::function<void(PluginDescriptor&)> m_ModEntry;
-		std::function<void(PluginDescriptor&)> m_ModUnload;
-	};
-
 	struct PluginDataInternal
 	{
 		uintptr_t ModuleBase;
-		PluginDescriptor Descriptor;
+		YYTKPlugin Descriptor;
 		JSONData Data;
 	};
 

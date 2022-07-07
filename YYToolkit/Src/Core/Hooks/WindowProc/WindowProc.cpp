@@ -2,7 +2,7 @@
 #include "../../Utils/Logging/Logging.hpp"
 #include "../../Features/API/API.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 namespace Hooks
 {
@@ -13,11 +13,11 @@ namespace Hooks
 			if (Msg == WM_CLOSE)
 				exit(0);
 
-			YYTKWindowProcEvent Event = YYTKWindowProcEvent(pfnOriginal, hwnd, Msg, w, l);
+			FWWindowProc Event(pfnOriginal, hwnd, Msg, w, l);
 			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
-				return Event.GetReturn();
+				return Event.Result();
 
 			return CallWindowProc(pfnOriginal, hwnd, Msg, w, l);
 		}

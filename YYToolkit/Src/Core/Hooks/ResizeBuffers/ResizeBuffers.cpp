@@ -3,7 +3,7 @@
 #include "../../Utils/Logging/Logging.hpp"
 #include "../../Utils/D3D11 Hooker/D3D11Hooker.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 namespace Hooks
 {
@@ -13,11 +13,11 @@ namespace Hooks
 		{
 			// Call events scope
 			{
-				YYTKResizeBuffersEvent Event = YYTKResizeBuffersEvent(pfnOriginal, _this, BufferCount, Width, Height, NewFormat, SwapChainFlags);
+				FWResizeBuffers Event(pfnOriginal, _this, BufferCount, Width, Height, NewFormat, SwapChainFlags);
 				//API::PluginManager::RunHooks(&Event);
 
 				if (Event.CalledOriginal())
-					return Event.GetReturn();
+					return Event.Result();
 			}
 
 			// Release all needed resources

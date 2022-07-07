@@ -1,18 +1,10 @@
-#pragma once
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-#endif
+#ifndef _YYTK_SDK_PLUGINS_H_
+#define _YYTK_SDK_PLUGINS_H_
 #include "../Enums/Enums.hpp"
-#include <Windows.h>
-#include <dxgiformat.h>
+#include <functional>
 
-struct CInstance;
-struct YYRValue;
-struct CCode;
 struct YYTKPlugin;
-class YYTKEventBase;
 
-using FNEventHandler = YYTKStatus(*)(YYTKEventBase* pEvent, void* Argument);
 using FNPluginEntry = YYTKStatus(*)(YYTKPlugin* pPluginObject);
 using FNPluginUnload = YYTKStatus(*)();
 using FNPluginPreloadEntry = YYTKStatus(*)(YYTKPlugin* pPluginObject);
@@ -21,12 +13,10 @@ using FNPluginPreloadEntry = YYTKStatus(*)(YYTKPlugin* pPluginObject);
 
 struct YYTKPlugin
 {
-	FNPluginEntry PluginEntry;			// Pointer to the entry function - set by the core.
-	FNPluginUnload PluginUnload;		// Pointer to the unload function - optional, set by the plugin.
-	FNPluginPreloadEntry PluginPreload; // Pointer to the plugin preload handler - set by the core if the plugin has one defined.
-
-	void* PluginStart;					// The base address of the plugin (can be casted to a HMODULE).
-	void* CoreStart;					// The base address of the core (can be casted to a HMODULE).
+	std::function<void(YYTKPlugin&)> m_ModPreload;
+	std::function<void(YYTKPlugin&)> m_ModEntry;
+	std::function<void(YYTKPlugin&)> m_ModUnload;
 };
 
 #pragma pack(pop)
+#endif // _YYTK_SDK_PLUGINS_H_

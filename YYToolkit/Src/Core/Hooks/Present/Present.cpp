@@ -4,7 +4,7 @@
 #include "../../Utils/D3D11 Hooker/D3D11Hooker.hpp"
 #include <mutex> // std::call_once
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 static std::once_flag g_CreatedRenderView;
 
@@ -14,7 +14,7 @@ namespace Hooks
 	{
 		HRESULT __stdcall Function(IDXGISwapChain* _this, unsigned int Sync, unsigned int Flags)
 		{
-			YYTKPresentEvent Event = YYTKPresentEvent(pfnOriginal, _this, Sync, Flags);
+			FWPresent Event(pfnOriginal, _this, Sync, Flags);
 
 			//API::PluginManager::RunHooks(&Event);
 
@@ -42,7 +42,7 @@ namespace Hooks
 			);
 			
 			if (Event.CalledOriginal())
-				return Event.GetReturn();
+				return Event.Result();
 
 			return pfnOriginal(_this, Sync, Flags);
 		}

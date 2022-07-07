@@ -1,7 +1,7 @@
 #include "DoCallScript.hpp"
 #include "../../Features/API/API.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 namespace Hooks
 {
@@ -9,11 +9,11 @@ namespace Hooks
 	{
 		char* Function(CScript* pScript, int argc, char* pStackPointer, VMExec* pVM, YYObjectBase* pLocals, YYObjectBase* pArguments)
 		{
-			YYTKScriptEvent Event = YYTKScriptEvent(pfnOriginal, pScript, argc, pStackPointer, pVM, pLocals, pArguments);
+			FWDoCallScript Event(pfnOriginal, pScript, argc, pStackPointer, pVM, pLocals, pArguments);
 			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
-				return Event.GetReturn();
+				return Event.Result();
 
 			return pfnOriginal(pScript, argc, pStackPointer, pVM, pLocals, pArguments);
 		}

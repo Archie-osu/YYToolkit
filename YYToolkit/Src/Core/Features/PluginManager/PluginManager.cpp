@@ -8,7 +8,6 @@
 #include <filesystem>
 #include <fstream>
 
-
 namespace PM
 {
 	bool ReadManifest(const std::wstring& FilePath, JSONData& Data)
@@ -94,7 +93,7 @@ namespace PM
 		InternalData.Data = JsonData;
 		InternalData.ModuleBase = reinterpret_cast<uintptr_t>(hModule);
 
-		using YYTKFunc = void(*)(PluginDescriptor& Descriptor);
+		using YYTKFunc = void(*)(YYTKPlugin& Descriptor);
 
 		// PluginEntry in older terms
 		YYTKFunc ModEntry = reinterpret_cast<YYTKFunc>(GetProcAddress(hModule, "ModEntry"));
@@ -238,7 +237,7 @@ namespace PM
 					if (LoadPlugin(PotentialPluginFile, Data, PluginData))
 					{
 						g_Plugins.emplace_back(PluginData);
-						Utils::Logging::Message(CLR_LIGHTBLUE, "Loaded plugin \"%s\" - mapped to 0x%X", 
+						Utils::Logging::Message(CLR_BLUE, "Loaded plugin \"%s\" - mapped to 0x%X", 
 							PluginData.Data.Name.c_str(),
 							PluginData.ModuleBase
 						);

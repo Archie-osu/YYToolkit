@@ -2,7 +2,7 @@
 #include "../../Features/API/API.hpp"
 #include "../../Features/PluginManager/PluginManager.hpp"
 #include "../../Utils/Logging/Logging.hpp"
-#include "../../SDK/Plugins/YYTKEvent/YYTKEvent.hpp"
+#include "../../SDK/Plugins/FunctionWrapper/FunctionWrapper.hpp"
 
 namespace Hooks
 {
@@ -10,11 +10,11 @@ namespace Hooks
 	{
 		bool Function(CInstance* pSelf, CInstance* pOther, CCode* Code, RValue* Res, int Flags)
 		{
-			YYTKCodeEvent Event = YYTKCodeEvent(pfnOriginal, pSelf, pOther, Code, Res, Flags);
+			FWExecuteIt Event(pfnOriginal, pSelf, pOther, Code, Res, Flags);
 			//API::PluginManager::RunHooks(&Event);
 
 			if (Event.CalledOriginal())
-				return Event.GetReturn();
+				return Event.Result();
 
 			return pfnOriginal(pSelf, pOther, Code, Res, Flags);
 		}
