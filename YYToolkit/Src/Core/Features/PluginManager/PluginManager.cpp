@@ -74,14 +74,7 @@ namespace PM
 
 	bool IsPEArchitectureCompatible(const std::wstring& FilePath)
 	{
-/*
-#if _WIN64
-		return Utils::PE::IsPEx64(FilePath.c_str());
-#else
-		return !Utils::PE::IsPEx64(FilePath.c_str());
-#endif
-*/
-		// Yes thank you nik
+		// Thank you nik
 		return sizeof(int*) == (Utils::PE::IsPEx64(FilePath.c_str()) ? 8 : 4);
 	}
 
