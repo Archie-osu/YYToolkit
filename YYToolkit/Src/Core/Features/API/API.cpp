@@ -158,10 +158,5 @@ void API::PopFileOpenDialog(const std::string& WindowTitle, const std::string& I
 
 void API::PrintMessage(Color color, const char* fmt, ...)
 {
-	va_list vaArgs;
-	va_start(vaArgs, fmt);
-	std::string Message = Utils::Logging::ParseVA(fmt, vaArgs);
-	va_end(vaArgs);
 
-	return Utils::Logging::Message(color, Message.c_str());
 }

@@ -207,23 +207,7 @@ YYTKStatus API::Internal::MmFindCodeExecute(uintptr_t& dwOutBuffer)
 {
 	uintptr_t dwPattern = 0;
 #ifdef _WIN64
-	if (YYTKStatus _Status = MmFindByteArray(
-		"\x4C\x8B\x50\x08\x75\x18",
-		UINT_MAX,
-		0,
-		0,
-		"xxxxx",
-		false,
-		dwPattern
-	))
-		return _Status;
-
-	if (dwPattern == 0)
-		return YYTK_INVALIDRESULT;
-
-	dwOutBuffer = dwPattern;
-	
-	return YYTK_OK;
+	return YYTK_UNAVAILABLE;
 #else
 
 	if (YYTKStatus _Status = MmFindByteArray(
