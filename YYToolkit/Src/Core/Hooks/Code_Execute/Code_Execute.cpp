@@ -11,7 +11,7 @@ namespace Hooks
 		bool Function(CInstance* pSelf, CInstance* pOther, CCode* Code, RValue* Res, int Flags)
 		{
 			FWExecuteIt Event(pfnOriginal, pSelf, pOther, Code, Res, Flags);
-			//API::PluginManager::RunHooks(&Event);
+			PM::InvokeCallbacks(EventType::kCodeExecute, Event);
 
 			if (Event.CalledOriginal())
 				return Event.Result();

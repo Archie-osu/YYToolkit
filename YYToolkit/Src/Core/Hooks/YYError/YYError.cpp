@@ -13,7 +13,7 @@ namespace Hooks
 			// Call events scope
 			{
 				FWYYError Event(pfnOriginal, pFormat);
-				//API::PluginManager::RunHooks(&Event);
+				PM::InvokeCallbacks(EventType::kYYError, Event);
 
 				if (Event.CalledOriginal())
 					return;

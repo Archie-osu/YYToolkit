@@ -14,7 +14,7 @@ namespace Hooks
 			// Call events scope
 			{
 				FWResizeBuffers Event(pfnOriginal, _this, BufferCount, Width, Height, NewFormat, SwapChainFlags);
-				//API::PluginManager::RunHooks(&Event);
+				PM::InvokeCallbacks(EventType::kResizeBuffers, Event);
 
 				if (Event.CalledOriginal())
 					return Event.Result();

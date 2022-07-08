@@ -14,7 +14,7 @@ namespace Hooks
 				exit(0);
 
 			FWWindowProc Event(pfnOriginal, hwnd, Msg, w, l);
-			//API::PluginManager::RunHooks(&Event);
+			PM::InvokeCallbacks(EventType::kWndProc, Event);
 
 			if (Event.CalledOriginal())
 				return Event.Result();

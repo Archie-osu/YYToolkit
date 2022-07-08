@@ -10,7 +10,7 @@ namespace Hooks
 		char* Function(CScript* pScript, int argc, char* pStackPointer, VMExec* pVM, YYObjectBase* pLocals, YYObjectBase* pArguments)
 		{
 			FWDoCallScript Event(pfnOriginal, pScript, argc, pStackPointer, pVM, pLocals, pArguments);
-			//API::PluginManager::RunHooks(&Event);
+			PM::InvokeCallbacks(EventType::kDoCallScript, Event);
 
 			if (Event.CalledOriginal())
 				return Event.Result();

@@ -11,7 +11,7 @@ namespace Hooks
 		HRESULT __stdcall Function(LPDIRECT3DDEVICE9 _this)
 		{
 			FWEndScene Event(pfnOriginal, _this);
-			//API::PluginManager::RunHooks(&Event);
+			PM::InvokeCallbacks(EventType::kEndScene, Event);
 
 			if (Event.CalledOriginal())
 				return Event.Result();

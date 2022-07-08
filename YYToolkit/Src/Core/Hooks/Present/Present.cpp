@@ -15,8 +15,7 @@ namespace Hooks
 		HRESULT __stdcall Function(IDXGISwapChain* _this, unsigned int Sync, unsigned int Flags)
 		{
 			FWPresent Event(pfnOriginal, _this, Sync, Flags);
-
-			//API::PluginManager::RunHooks(&Event);
+			PM::InvokeCallbacks(EventType::kPresent, Event);
 
 			std::call_once(g_CreatedRenderView, [&]()
 				{
